@@ -1,6 +1,7 @@
-<script setup>
+<script lang="ts" setup>
+import { onMounted, onUnmounted } from 'vue';
 </script>
 
 <template>
-    <div>Swap container</div>
+    <div>SWAP CONTAINER</div>
 </template>

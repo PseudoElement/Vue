@@ -11,8 +11,13 @@ a {
 
 main {
     width: 500px;
-    // height: 100vh;
     border: 2px solid red;
     margin: 0 auto;
+    margin-top: 50px;
     box-sizing: border-box;
+    padding: 10px;
+    background: rgba($color: #000000, $alpha: 0.2);
+    button {
+        cursor: pointer;
+    }
 }

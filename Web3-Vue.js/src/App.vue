@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import AppHeader from './features/header/AppHeader.vue'
+import { useStore } from 'vuex';
+import AppHeader from './features/header/AppHeader.vue';
+import type { StoreState } from './core/store/models/store-types';
+
+const store = useStore<StoreState>();
 </script>
 
 <template>
