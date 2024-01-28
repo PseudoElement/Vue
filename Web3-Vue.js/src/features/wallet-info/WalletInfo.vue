@@ -8,10 +8,11 @@ import { WalletService } from '../../core/services/wallet-service';
 const store = useStore<StoreState>();
 const chainId = computed(() => store.state.wallet.chainId);
 const walletAddress = computed(() => store.state.wallet.address);
+const isConnected = computed(() => store.state.wallet.isConnected);
 const walletSrv = new WalletService();
 
 const onConnectButtonClick = (): void => {
-    if (walletAddress.value) {
+    if (isConnected.value) {
         walletSrv.disconnectWallet();
     } else {
         walletSrv.connectWallet();
@@ -20,12 +21,6 @@ const onConnectButtonClick = (): void => {
 
 onMounted(() => {
     walletSrv.connectWallet();
-    walletSrv.setChainId();
-
-    window.ethereum?.on('accountsChanged', (accounts: any) => {
-        console.log('accountsChanged', accounts);
-        store.commit('setWalletAddress', accounts[0] ?? null);
-    });
 });
 </script>
 
@@ -33,7 +28,7 @@ onMounted(() => {
     <div class="wallet-info-container">
         WALLET INFO
         <h2>{{ walletAddress ? 'Your wallet: ' + walletAddress : "You haven't connected wallet yet." }}</h2>
-        <h2 v-if="chainId">ChainId: {{ chainId }}</h2>
+        <h2 v-if="chainId">Chain id: {{ chainId }}</h2>
         <AppButton @click="onConnectButtonClick()"> {{ !walletAddress ? 'Connect Wallet' : 'Disconnect' }} </AppButton>
     </div>
 </template>

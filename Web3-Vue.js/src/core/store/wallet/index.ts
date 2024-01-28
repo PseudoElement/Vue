@@ -1,11 +1,13 @@
 import { WalletActions } from './actions';
+import type { WalletState } from './model';
 import { WalletMutations } from './mutations';
 
 export const WalletModule = {
-    state: () => ({
+    state: (): WalletState => ({
         address: null,
         type: null,
-        chainId: null
+        chainId: null,
+        isConnected: false
     }),
     mutations: WalletMutations,
     actions: WalletActions,

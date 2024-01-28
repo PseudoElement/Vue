@@ -13,6 +13,7 @@
         "esModuleInterop": true,
         "module": "esnext",
         "moduleResolution": "node",
-        "target": "esnext"
+        "target": "esnext",
+        "verbatimModuleSyntax": false
     }
 }

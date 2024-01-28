@@ -2,16 +2,18 @@ import BigNumber from 'bignumber.js';
 import type { WalletState } from './model';
 
 export const WalletMutations = {
-    setWalletAddress(state: WalletState, address: string): void {
+    connectWallet(state: WalletState, address: string): void {
         state.address = address;
+        state.isConnected = true;
     },
-    setChainId(state: WalletState, chainId: string | null): void {
-        if (chainId) {
-            const numberId = new BigNumber(chainId).toNumber();
-            state.chainId = numberId;
-        } else {
-            state.chainId = null;
-        }
+    disconnectWallet(state: WalletState): void {
+        state.address = null;
+        state.chainId = null;
+        state.isConnected = false;
+    },
+    setChainId(state: WalletState, chainId: string): void {
+        const numberId = new BigNumber(chainId).toNumber();
+        state.chainId = numberId;
     }
 };
 

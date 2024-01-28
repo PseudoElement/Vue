@@ -13,12 +13,12 @@ export const WalletActions = {
         })) as string[];
         const address = accounts?.[0] || null;
 
-        ctx.commit('setWalletAddress', address);
+        ctx.commit('connectWallet', address);
         ctx.dispatch('setChainId');
     },
 
     disconnectWallet(ctx: ActionContext<WalletState, StoreState>) {
-        ctx.commit('setWalletAddress', null);
+        ctx.commit('disconnectWallet');
         ctx.commit('setChainId', null);
     },
 
