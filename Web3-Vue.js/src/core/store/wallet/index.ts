@@ -1,14 +1,13 @@
-import type { WalletState } from './model';
+import { WalletActions } from './actions';
 import { WalletMutations } from './mutations';
 
-export const walletModule = {
+export const WalletModule = {
     state: () => ({
         address: null,
-        type: null
+        type: null,
+        chainId: null
     }),
-    mutations: {
-        [WalletMutations.SET_WALLET_ADDRESS](state: WalletState, address: string) {
-            state.address = address;
-        }
-    }
+    mutations: WalletMutations,
+    actions: WalletActions,
+    getters: {}
 };

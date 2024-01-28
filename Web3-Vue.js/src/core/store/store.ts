@@ -1,16 +1,14 @@
 import type { InjectionKey } from 'vue';
-import { createStore, type Store, useStore as baseUseStore } from 'vuex';
+import { createStore, type Store as VuexStore } from 'vuex';
 import type { StoreState } from './models/store-types';
-import { walletModule } from '../store/wallet/index';
+import { WalletModule } from '../store/wallet/index';
 
-export const key: InjectionKey<Store<StoreState>> = Symbol();
+export type AppStore = VuexStore<StoreState>;
+
+export const key: InjectionKey<AppStore> = Symbol();
 
 export const store = createStore<StoreState>({
     modules: {
-        wallet: walletModule
+        wallet: WalletModule
     }
 });
-
-export function useAppStore() {
-    return baseUseStore(key);
-}

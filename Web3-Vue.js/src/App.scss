@@ -10,7 +10,8 @@ a {
 }
 
 main {
-    width: 500px;
+    width: 100%;
+    max-width: 800px;
     border: 2px solid red;
     margin: 0 auto;
     margin-top: 50px;

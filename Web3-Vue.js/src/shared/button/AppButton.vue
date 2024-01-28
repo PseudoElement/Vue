@@ -12,5 +12,6 @@
 .app-button {
     border-radius: 7px;
     font-size: 30px;
+    cursor: pointer;
 }
 </style>
