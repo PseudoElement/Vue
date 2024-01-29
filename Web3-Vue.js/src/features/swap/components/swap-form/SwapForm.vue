@@ -29,7 +29,7 @@ const setFromTokenList = async (blockchainName: BlockchainName): Promise<void> =
 const setToTokenList = async (blockchainName: BlockchainName): Promise<void> => {
     const chainId = Utils.getChainIdByName(blockchainName);
     const openOceanTokens = await OpenOceanApiService.getTokenList(chainId);
-    fromTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
+    toTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
 };
 
 //watchers
