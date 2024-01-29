@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 import { SelectOption } from './model';
 
-const { defaultOption, options, title } = defineProps<{
+const { defaultValue, options, title } = defineProps<{
     options: SelectOption[];
-    defaultOption?: SelectOption;
+    defaultValue?: string | null;
     title: string;
 }>();
 
-const selectedValue = ref<string>(defaultOption?.value || options[0].value);
+const selectedValue = ref<string>(defaultValue || options[0].value);
 
 const selectValue = (e: any): void => {
     selectedValue.value = e.target.value;
@@ -35,6 +35,7 @@ const selectValue = (e: any): void => {
 .select {
     cursor: pointer;
     font-size: 24px;
+    max-width: 250px;
 
     &-option {
         border-bottom: 1px solid red !important;

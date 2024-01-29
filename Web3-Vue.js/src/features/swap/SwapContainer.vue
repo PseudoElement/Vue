@@ -19,6 +19,10 @@ import SwapForm from './components/swap-form/SwapForm.vue';
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+
+    &__title {
+        margin-bottom: 20px;
+    }
 }
 </style>
-./components/swap-form/constants/select-options
