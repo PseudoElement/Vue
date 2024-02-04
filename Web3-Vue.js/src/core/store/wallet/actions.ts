@@ -4,7 +4,7 @@ import type { StoreState } from '../models/store-types';
 
 export const WalletActions = {
     async connectWallet(ctx: ActionContext<WalletState, StoreState>) {
-        if (window === undefined || window.ethereum === undefined) {
+        if (window === undefined || typeof window.ethereum === 'undefined') {
             throw new Error('Install Metamask extension in browser, then retry to connect!');
         }
 
@@ -28,7 +28,9 @@ export const WalletActions = {
         })) as string[];
 
         ctx.commit('setChainId', chainId);
-    }
+    },
+
+    async getBalance() {}
 };
 
 export type WalletActionsType = keyof typeof WalletActions;

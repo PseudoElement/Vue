@@ -1,17 +1,21 @@
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-}
+body {
+    // padding: 0;
+    // margin: 0;
+    // box-sizing: border-box;
 
-a {
-    text-decoration: none !important;
-    color: black !important;
+    p {
+        margin: 0;
+        padding: 0;
+    }
+
+    a {
+        text-decoration: none !important;
+        color: black !important;
+    }
 }
 
 main {
     width: 100%;
-    // max-width: 800px;
     border: 2px solid red;
     border-radius: 10px;
     margin: 0 auto;
@@ -19,6 +23,7 @@ main {
     box-sizing: border-box;
     padding: 10px;
     background: rgba($color: #000000, $alpha: 0.2);
+
     button {
         cursor: pointer;
     }

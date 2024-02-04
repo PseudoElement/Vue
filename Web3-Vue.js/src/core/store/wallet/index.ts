@@ -7,6 +7,7 @@ export const WalletModule = {
         address: null,
         type: null,
         chainId: null,
+        balance: null,
         isConnected: false
     }),
     mutations: WalletMutations,

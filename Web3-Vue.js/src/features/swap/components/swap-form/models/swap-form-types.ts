@@ -1,11 +1,11 @@
 import { BlockchainName } from '@/src/core/constants/blockchain-names';
-import { TokenName } from '@/src/core/constants/token-names';
 import { SelectOption } from '@/src/shared/inputs/input-select/model';
 
 export interface AssetType {
-    token: TokenName | null;
+    token: string | null;
     blockchain: BlockchainName;
-    amount: string;
+    address: string;
+    amount: string | null;
 }
 
 export interface ChainOption extends SelectOption {
@@ -13,5 +13,6 @@ export interface ChainOption extends SelectOption {
 }
 
 export interface TokenOption extends SelectOption {
-    value: TokenName;
+    value: string;
+    address: string;
 }

@@ -4,8 +4,8 @@ import { SelectOption } from './model';
 
 const { defaultValue, options, title } = defineProps<{
     options: SelectOption[];
-    defaultValue?: string | null;
     title: string;
+    defaultValue?: string | null;
 }>();
 
 const selectedValue = ref<string>(defaultValue || options[0].value);
@@ -35,7 +35,7 @@ const selectValue = (e: any): void => {
 .select {
     cursor: pointer;
     font-size: 24px;
-    max-width: 250px;
+    width: 250px;
 
     &-option {
         border-bottom: 1px solid red !important;

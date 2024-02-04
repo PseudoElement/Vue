@@ -5,4 +5,5 @@ export interface WalletState {
     type: WalletType | null;
     chainId: number | null;
     isConnected: boolean;
+    balance: string | null;
 }

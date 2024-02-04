@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import AppButton from '../../shared/button/AppButton.vue';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useStore } from 'vuex';
 import type { StoreState } from '@/src/core/store/models/store-types';
 import { WalletService } from '../../core/services/wallet-service';
 
 const store = useStore<StoreState>();
+
+//computeds
 const chainId = computed(() => store.state.wallet.chainId);
 const walletAddress = computed(() => store.state.wallet.address);
 const isConnected = computed(() => store.state.wallet.isConnected);
 const walletSrv = new WalletService();
 
+//funcs
 const onConnectButtonClick = (): void => {
     if (isConnected.value) {
         walletSrv.disconnectWallet();
@@ -19,9 +22,8 @@ const onConnectButtonClick = (): void => {
     }
 };
 
-onMounted(() => {
-    walletSrv.connectWallet();
-});
+//lifecycle hooks
+//
 </script>
 
 <template>
