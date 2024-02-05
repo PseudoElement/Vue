@@ -39,7 +39,7 @@ export class Web3Service {
 
     private async _getNotNativeBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
         const web3 = new Web3(new Web3(new Web3.providers.HttpProvider(RPC_LIST[blockchain])));
-        const contract = new this._web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
+        const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
         const amount = (await contract.methods.balanceOf(walletAddress).call()) as string;
         console.log('NOT_NATIVE', amount);
 

@@ -4,8 +4,7 @@ import { SelectOption } from '@/src/shared/inputs/input-select/model';
 export interface AssetType {
     token: string | null;
     blockchain: BlockchainName;
-    address: string;
-    amount: string | null;
+    address: string | null;
 }
 
 export interface ChainOption extends SelectOption {
@@ -13,6 +12,5 @@ export interface ChainOption extends SelectOption {
 }
 
 export interface TokenOption extends SelectOption {
-    value: string;
     address: string;
 }

@@ -9,11 +9,15 @@ import { AssetType, TokenOption } from './models/swap-form-types';
 import { OpenOceanApiService } from '../../../../core/services/open-ocean/open-ocean-api-service';
 import { Utils } from '../../../../core/utils/utils';
 import { OpenOceanParser } from '../../../../core/services/open-ocean/open-ocean-parser';
-import { BlockchainName } from '../../../../core/constants/blockchain-names';
 import BigNumber from 'bignumber.js';
 import { Web3Service } from '../../../../core/services/web3-service';
 import { useStore } from 'vuex';
 import { StoreState } from '@/src/core/store/models/store-types';
+import { SelectOption } from '@/src/shared/inputs/input-select/model';
+import { WalletService } from '../../../../core/services/wallet-service';
+import { BlockchainName } from '../../../../core/constants/blockchain-names';
+import { BLOCKCHAIN_IDS } from '../../../../core/constants/blockchain-ids';
+import { SwapFormService } from '../../../../core/services/swap-form-service';
 
 const store = useStore<StoreState>();
 
@@ -22,64 +26,78 @@ const fromTokenList = ref<TokenOption[]>([]);
 const toTokenList = ref<TokenOption[]>([]);
 const isFromTokenListLoading = ref<boolean>(false);
 const isToTokenListLoading = ref<boolean>(false);
-const from = ref<AssetType>({ blockchain: SELECT_SOURCE_CHAINS[0].value, token: null, amount: null, address: '' });
-const to = ref<AssetType>({ blockchain: SELECT_TARGET_CHAINS[0].value, amount: null, token: null, address: '' });
+const fromAmount = ref<BigNumber>(new BigNumber(0));
+const toAmount = ref<BigNumber | null>(null);
 const selectedTokenBalance = ref<number | null>(null);
 
 //services
 const web3Srv = new Web3Service();
+const walletSrv = new WalletService();
+const swapFormSrv = new SwapFormService();
 
 //computeds
 const fromBlockchain = computed(() => from.value.blockchain);
 const toBlockchain = computed(() => to.value.blockchain);
 const fromToken = computed(() => from.value.token);
 const walletAddress = computed(() => store.state.wallet.address);
+const from = computed<AssetType>(() => store.state.swapForm.from);
+const to = computed<AssetType>(() => store.state.swapForm.to);
 
 //funcs
 const setFromAmount = (value: string): void => {
-    from.value.amount = value;
+    fromAmount.value = new BigNumber(value);
+};
+
+const setFromToken = (token: SelectOption): void => {
+    swapFormSrv.setFromToken(token as TokenOption);
+};
+
+const setToToken = (token: SelectOption): void => {
+    swapFormSrv.setToToken(token as TokenOption);
 };
 
 const setSelectedTokenBalance = (amount: BigNumber): void => {
     selectedTokenBalance.value = amount.toNumber();
 };
 
-const getFromTokenAddress = (token: string): string => {
-    const foundToken = fromTokenList.value.find((t) => t.value === token)!;
-    return foundToken.address;
-};
-
-const setFromTokenList = async (blockchainName: BlockchainName): Promise<void> => {
+const setFromTokenList = async (): Promise<void> => {
     isFromTokenListLoading.value = true;
-    const chainId = Utils.getChainIdByName(blockchainName);
+    const chainId = Utils.getChainIdByName(from.value.blockchain);
     const openOceanTokens = await OpenOceanApiService.getTokenList(chainId);
     fromTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
     isFromTokenListLoading.value = false;
 };
 
-const setToTokenList = async (blockchainName: BlockchainName): Promise<void> => {
+const setToTokenList = async (): Promise<void> => {
     isToTokenListLoading.value = true;
-    const chainId = Utils.getChainIdByName(blockchainName);
+    const chainId = Utils.getChainIdByName(to.value.blockchain);
     const openOceanTokens = await OpenOceanApiService.getTokenList(chainId);
     toTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
     isToTokenListLoading.value = false;
 };
 
-const receiveFromTokenBalance = async (token: string): Promise<void> => {
-    const fromTokenAddress = getFromTokenAddress(token);
-    const balance = await web3Srv.getBalance(walletAddress.value as string, fromTokenAddress, from.value.blockchain);
+const onChangeFromBlockchain = async (blockchain: BlockchainName): Promise<void> => {
+    const chainId = BLOCKCHAIN_IDS[blockchain];
+    await walletSrv.switchChain(chainId);
+    await setFromTokenList();
+    setFromToken(fromTokenList.value[0]);
+};
+
+const receiveFromTokenBalance = async (): Promise<void> => {
+    const balance = await web3Srv.getBalance(walletAddress.value as string, from.value.address!, from.value.blockchain);
     setSelectedTokenBalance(balance);
 };
 
 //watchers
-watch(fromBlockchain, async (chain) => await setFromTokenList(chain));
-watch(toBlockchain, async (chain) => await setToTokenList(chain));
-watch(fromToken, async (token) => await receiveFromTokenBalance(token as string));
+watch(fromBlockchain, async (blockchain) => await onChangeFromBlockchain(blockchain));
+watch(toBlockchain, async () => await setToTokenList());
+watch(fromToken, async () => await receiveFromTokenBalance());
 
 //lifecycle hooks
 onMounted(async () => {
-    await setFromTokenList(from.value.blockchain);
-    await setToTokenList(to.value.blockchain);
+    await setFromTokenList();
+    await setToTokenList();
+    await onChangeFromBlockchain(fromBlockchain.value);
 });
 </script>
 
@@ -95,9 +113,10 @@ onMounted(async () => {
 
             <InputSelect
                 v-if="!isFromTokenListLoading && fromTokenList.length"
-                v-model="from.token"
                 :options="fromTokenList"
                 :title="'Select source token'"
+                :show-value="true"
+                @select-value="setFromToken"
             />
             <div class="swap-form__from-loader" v-else>
                 <p>Tokens loading...</p>
@@ -105,8 +124,8 @@ onMounted(async () => {
             </div>
 
             <div class="swap-form__from-amount">
-                <InputText v-model="from.amount" :id="'fromAmount'" :label="'Input amount'" :debounce="200" @on-input="setFromAmount" />
-                <p>Balance: {{ selectedTokenBalance }}</p>
+                <InputText v-model="fromAmount" :id="'fromAmount'" :label="'Input amount'" :debounce="200" @on-input="setFromAmount" />
+                <p>Balance: {{ `${selectedTokenBalance} ${from.token}` }}</p>
             </div>
         </section>
         <section class="swap-form__to">
@@ -114,16 +133,17 @@ onMounted(async () => {
 
             <InputSelect
                 v-if="!isToTokenListLoading && toTokenList.length"
-                v-model="to.token"
                 :options="toTokenList"
                 :title="'Select target token'"
+                :show-value="true"
+                @select-value="setToToken"
             />
             <div class="swap-form__to-loader" v-else>
                 <p>Tokens loading...</p>
                 <AppLoader />
             </div>
 
-            <InputText v-model="to.amount" :id="'toAmount'" :label="'Output amount'" :disabled="true" />
+            <InputText v-model="toAmount" :id="'toAmount'" :label="'Output amount'" :disabled="true" />
         </section>
     </div>
 </template>

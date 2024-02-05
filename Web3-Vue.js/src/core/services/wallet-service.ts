@@ -27,6 +27,10 @@ export class WalletService {
         this._store.dispatch('setChainId');
     }
 
+    public switchChain(chainId: number): void {
+        this._store.dispatch('switchChain', chainId);
+    }
+
     private _onConnectWallet(): void {
         this._listenAccountChanges();
         this._listenChainChanges();
