@@ -67,8 +67,7 @@ const setToTokenList = async (blockchainName: BlockchainName): Promise<void> => 
 
 const receiveFromTokenBalance = async (token: string): Promise<void> => {
     const fromTokenAddress = getFromTokenAddress(token);
-    console.log(walletAddress.value, fromTokenAddress);
-    const balance = await web3Srv.getBalance(walletAddress.value as string, fromTokenAddress);
+    const balance = await web3Srv.getBalance(walletAddress.value as string, fromTokenAddress, from.value.blockchain);
     setSelectedTokenBalance(balance);
 };
 
