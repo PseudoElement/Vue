@@ -2,7 +2,7 @@
 import { onMounted } from 'vue';
 import AppHeader from './features/header/AppHeader.vue';
 import { Web3Service } from './core/services/web3-service';
-import { WalletService } from './core/services/wallet-service';
+import { WalletService } from './core/services/wallet/wallet-service';
 
 //srv
 const web3Srv = new Web3Service();
@@ -42,3 +42,4 @@ body {
     }
 }
 </style>
+./core/services/wallet/wallet-service

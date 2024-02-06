@@ -2,46 +2,69 @@
 import { ref } from 'vue';
 import { SelectOption } from './model';
 
-const { defaultValue, options, title } = defineProps<{
+//props
+const { value, options, title, showValue } = defineProps<{
     options: SelectOption[];
     title: string;
-    defaultValue?: string | null;
+    value?: string | null;
     showValue?: boolean;
 }>();
 
+//refs
+const selectedValue = ref<string | null>(value || null);
+
+//emits
 const emitValue = defineEmits<{ selectValue: SelectOption[] }>();
 
-const selectedValue = ref<string>(defaultValue || options[0].value);
+//computeds
 
+//funcs
 const selectValue = (e: Event): void => {
     const target = e.target as HTMLInputElement;
     selectedValue.value = target.value;
     const option = options.find((o) => o.value === target.value)!;
     emitValue('selectValue', option);
 };
+
+//watchers
+//
 </script>
 
 <template>
-    <select class="select" v-model="selectedValue" @change="selectValue($event)">
-        <option class="select-option" disabled>{{ title }}</option>
-        <option class="select-option" v-for="option in options" :key="option.value" :value="option.value" :disabled="option.isDisabled">
-            {{ showValue ? option.value : option.text }}
-        </option>
-    </select>
+    <div class="select-wrapper">
+        <h3 class="select-wrapper__title">{{ title }}</h3>
+        <select class="select-wrapper__select" v-model="selectedValue" @change="selectValue($event)">
+            <option
+                class="select-option"
+                v-for="option in options"
+                :key="option.value!"
+                :value="option.value"
+                :disabled="option.isDisabled"
+            >
+                {{ showValue ? option.value : option.text }}
+            </option>
+        </select>
+    </div>
 </template>
 
 <style lang="scss" scoped>
-.select {
-    cursor: pointer;
-    font-size: 24px;
-    width: 250px;
+.select-wrapper {
+    &__title {
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+    &__select {
+        cursor: pointer;
+        font-size: 24px;
+        width: 250px;
 
-    &-option {
-        border-bottom: 1px solid red !important;
-        font-style: italic;
+        &-option {
+            border-bottom: 1px solid red !important;
+            font-style: italic;
 
-        &__last {
-            color: red;
+            &__last {
+                color: red;
+            }
         }
     }
 }

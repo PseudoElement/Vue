@@ -11,9 +11,12 @@ export const WalletMutations = {
         state.chainId = null;
         state.isConnected = false;
     },
-    setChainId(state: WalletState, chainId: string | number): void {
-        const numberId = new BigNumber(chainId).toNumber();
-        state.chainId = numberId;
+    setChainId(state: WalletState, chainId: number | string): void {
+        if (typeof chainId == 'number') {
+            state.chainId = chainId;
+        } else {
+            state.chainId = new BigNumber(chainId).toNumber();
+        }
     }
 };
 

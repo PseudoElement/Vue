@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 import { Utils } from '../../../core/utils/utils';
 
 const { defaultValue, disabled, label, placeholder, id, debounce, required } = defineProps<{

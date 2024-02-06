@@ -3,7 +3,7 @@ import AppButton from '../../shared/button/AppButton.vue';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
 import type { StoreState } from '@/src/core/store/models/store-types';
-import { WalletService } from '../../core/services/wallet-service';
+import { WalletService } from '../../core/services/wallet/wallet-service';
 
 const store = useStore<StoreState>();
 
@@ -38,3 +38,4 @@ const onConnectButtonClick = (): void => {
 <style lang="scss" scoped>
 @import './WalletInfo.scss';
 </style>
+../../core/services/wallet/wallet-service

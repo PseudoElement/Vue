@@ -1,5 +1,5 @@
 import { Store, useStore } from 'vuex';
-import type { StoreState } from '../store/models/store-types';
+import type { StoreState } from '../../store/models/store-types';
 
 export class WalletService {
     private _store: Store<StoreState>;
@@ -27,8 +27,8 @@ export class WalletService {
         this._store.dispatch('setChainId');
     }
 
-    public switchChain(chainId: number): void {
-        this._store.dispatch('switchChain', chainId);
+    public async switchChain(chainId: number): Promise<void> {
+        await this._store.dispatch('switchChain', chainId);
     }
 
     private _onConnectWallet(): void {
