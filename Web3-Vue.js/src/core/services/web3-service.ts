@@ -11,11 +11,8 @@ import { AmountParser } from './amount-parser/amount-parser';
 export class Web3Service {
     private _store: Store<StoreState>;
 
-    private _web3: Web3;
-
     constructor() {
         this._store = useStore<StoreState>();
-        this._web3 = this._store.state.appWeb3.web3 as Web3;
     }
 
     public connectWeb3(): void {
@@ -30,9 +27,18 @@ export class Web3Service {
         return balance;
     }
 
+    public async getDecimals(blockchain: BlockchainName, tokenAddress: string): Promise<number> {
+        const web3 = new Web3(new Web3.providers.HttpProvider(RPC_LIST[blockchain]));
+        const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
+        const decimals = (await contract.methods.decimals().call()) as number;
+
+        return new BigNumber(decimals).toNumber();
+    }
+
     private async _getNativeBalance(walletAddress: string): Promise<BigNumber> {
-        const weiAmount = await this._web3.eth.getBalance(walletAddress);
-        const amount = this._web3.utils.fromWei(weiAmount, 'ether');
+        const web3 = new Web3(window.ethereum);
+        const weiAmount = await web3.eth.getBalance(walletAddress);
+        const amount = web3.utils.fromWei(weiAmount, 'ether');
 
         return new BigNumber(amount);
     }
@@ -43,7 +49,7 @@ export class Web3Service {
             const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
             const [weiAmount, decimals] = (await Promise.all([
                 contract.methods.balanceOf(walletAddress).call(),
-                contract.methods.decimals().call()
+                this.getDecimals(blockchain, tokenAddress)
             ])) as [string, number];
             const amount = AmountParser.fromWei(weiAmount, decimals);
 

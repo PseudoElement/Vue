@@ -9,6 +9,12 @@ export const SwapFormMutations = {
     setToToken(state: SwapFormState, token: Partial<TokenOption>): void {
         state.to = { ...state.to, address: token.address!, token: token.value! };
     },
+    setFromDecimals(state: SwapFormState, decimals: number): void {
+        state.from = { ...state.from, decimals };
+    },
+    setToDecimals(state: SwapFormState, decimals: number): void {
+        state.to = { ...state.to, decimals };
+    },
     setFromBlockchain(state: SwapFormState, blockchain: BlockchainName): void {
         state.from = { ...state.from, blockchain };
     },

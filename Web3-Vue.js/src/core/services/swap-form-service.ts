@@ -14,6 +14,10 @@ export class SwapFormService {
         this._store.commit('setFromToken', token);
     }
 
+    public setFromDecimals(): void {
+        this._store.dispatch('setFromDecimals');
+    }
+
     public setToToken(token: TokenOption): void {
         this._store.commit('setToToken', token);
     }

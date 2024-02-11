@@ -19,4 +19,18 @@ export class AmountParser {
     public static fromWei(amountInWei: BigNumber | string | number, decimals = 18): BigNumber {
         return new BigNumber(amountInWei).div(new BigNumber(10).pow(decimals));
     }
+
+    /**
+     * Converts number, string or BigNumber value to integer string.
+     * @param amount Value to convert.
+     * @param multiplier Amount multiplier.
+     */
+    public static stringifyAmount(amount: number | string | BigNumber, multiplier = 1): string {
+        const bnAmount = new BigNumber(amount);
+        if (!bnAmount.isInteger()) {
+            throw new Error(`Value ${amount} is not integer`);
+        }
+
+        return bnAmount.multipliedBy(multiplier).toFixed(0);
+    }
 }

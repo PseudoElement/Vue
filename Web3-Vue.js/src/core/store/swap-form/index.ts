@@ -1,3 +1,4 @@
+import { SwapFormActions } from './actions';
 import type { SwapFormState } from './model';
 import { SwapFormMutations } from './mutations';
 
@@ -6,14 +7,18 @@ export const SwapFormModule = {
         from: {
             blockchain: null,
             address: null,
-            token: null
+            token: null,
+            decimals: null,
+            amount: null
         },
         to: {
             blockchain: null,
             address: null,
-            token: null
+            token: null,
+            decimals: null,
+            amount: null
         }
     }),
     mutations: SwapFormMutations,
-    actions: {}
+    actions: SwapFormActions
 };

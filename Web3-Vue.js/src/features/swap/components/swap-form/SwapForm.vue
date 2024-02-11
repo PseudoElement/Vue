@@ -38,10 +38,11 @@ const swapFormSrv = new SwapFormService();
 
 //computeds
 const fromBlockchain = computed(() => store.state.swapForm.from.blockchain);
+const fromToken = computed(() => store.state.swapForm.from.token);
+const fromAddress = computed(() => store.state.swapForm.from.address);
+const fromDecimals = computed(() => store.state.swapForm.from.decimals);
 const toBlockchain = computed(() => store.state.swapForm.to.blockchain);
-const fromToken = computed(() => from.value.token);
 const walletAddress = computed(() => store.state.wallet.address);
-const from = computed<AssetType>(() => store.state.swapForm.from);
 const to = computed<AssetType>(() => store.state.swapForm.to);
 const showBalance = computed<boolean>(() => !!fromToken.value && !isBalanceLoading.value);
 const showFromTokenSelect = computed<boolean>(() => !isFromTokenListLoading.value && !!fromTokenList.value.length);
@@ -60,12 +61,15 @@ const setFromAmount = (value: string): void => {
     fromAmount.value = new BigNumber(value);
 };
 
-const setFromToken = (token: SelectOption): void => {
+const setFromToken = async (token: SelectOption): Promise<void> => {
     swapFormSrv.setFromToken(token as TokenOption);
 };
 
+const setFromDecimals = (): void => {
+    swapFormSrv.setFromDecimals();
+};
+
 const removeFromToken = (): void => {
-    console.log('removeFromToken');
     swapFormSrv.removeFromToken();
 };
 
@@ -79,7 +83,7 @@ const setSelectedTokenBalance = (amount: BigNumber): void => {
 
 const setFromTokenList = async (): Promise<void> => {
     isFromTokenListLoading.value = true;
-    const chainId = Utils.getChainIdByName(from.value.blockchain!);
+    const chainId = Utils.getChainIdByName(fromBlockchain.value!);
     const openOceanTokens = await OpenOceanApiService.getTokenList(chainId);
     fromTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
     isFromTokenListLoading.value = false;
@@ -103,7 +107,7 @@ const onChangeFromBlockchain = async (blockchain: BlockchainName): Promise<void>
 const receiveFromTokenBalance = async (): Promise<void> => {
     try {
         isBalanceLoading.value = true;
-        const balance = await web3Srv.getBalance(walletAddress.value!, from.value.address!, from.value.blockchain!);
+        const balance = await web3Srv.getBalance(walletAddress.value!, fromAddress.value!, fromBlockchain.value!);
         setSelectedTokenBalance(balance);
     } finally {
         isBalanceLoading.value = false;
@@ -116,7 +120,11 @@ watch(fromBlockchain, async (blockchain) => {
     await onChangeFromBlockchain(blockchain);
 });
 watch(toBlockchain, async () => await setToTokenList());
-watch(fromToken, async () => await receiveFromTokenBalance());
+watch(fromToken, async () => {
+    await receiveFromTokenBalance();
+    setFromDecimals();
+    console.log('DECIMALS', fromDecimals);
+});
 
 //lifecycle hooks
 onMounted(async () => {});
@@ -149,7 +157,7 @@ onMounted(async () => {});
             <div class="swap-form__from-amount">
                 <InputText v-model="fromAmount" :id="'fromAmount'" :label="'Input amount'" :debounce="200" @on-input="setFromAmount" />
 
-                <p v-if="showBalance">Balance: {{ `${selectedTokenBalance} ${from.token}` }}</p>
+                <p v-if="showBalance">Balance: {{ `${selectedTokenBalance} ${fromToken}` }}</p>
                 <div v-else-if="isBalanceLoading" class="swap-form__from-loader">
                     <p>Balance loading...</p>
                     <AppLoader />
