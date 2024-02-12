@@ -24,4 +24,15 @@ export class Utils {
     public static getChainNameById(id: number): BlockchainName {
         return Object.entries(BLOCKCHAIN_IDS).find(([name, chainId]) => chainId === id)![0] as BlockchainName;
     }
+
+    public static shortenAmount(amount: string | number | null, decimalsCount: number = 5): string {
+        if (amount === null || amount === undefined) return '';
+        if (amount === 0) return '0';
+
+        amount = amount.toString();
+        const [int, decimals] = amount.split('.');
+        const shortDecimals = decimals.slice(0, decimalsCount);
+
+        return `${int}.${shortDecimals}...`;
+    }
 }

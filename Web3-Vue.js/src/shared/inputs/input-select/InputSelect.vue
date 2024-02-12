@@ -32,7 +32,7 @@ const selectValue = (e: Event): void => {
 
 <template>
     <div class="select-wrapper">
-        <h3 class="select-wrapper__title">{{ title }}</h3>
+        <h4 class="select-wrapper__title">{{ title }}</h4>
         <select class="select-wrapper__select" v-model="selectedValue" @change="selectValue($event)">
             <option
                 class="select-option"

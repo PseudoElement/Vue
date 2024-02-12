@@ -28,9 +28,9 @@ const onConnectButtonClick = (): void => {
 
 <template>
     <div class="wallet-info-container">
-        WALLET INFO
-        <h2>{{ walletAddress ? 'Your wallet: ' + walletAddress : "You haven't connected wallet yet." }}</h2>
-        <h2 v-if="chainId">Chain id: {{ chainId }}</h2>
+        <h2>WALLET INFO</h2>
+        <h3>{{ walletAddress ? 'Your wallet: ' + `${walletAddress}.` : "You haven't connected wallet yet." }}</h3>
+        <h3 v-if="chainId">Chain id: {{ chainId }}.</h3>
         <AppButton @click="onConnectButtonClick()"> {{ !walletAddress ? 'Connect Wallet' : 'Disconnect' }} </AppButton>
     </div>
 </template>
@@ -38,4 +38,3 @@ const onConnectButtonClick = (): void => {
 <style lang="scss" scoped>
 @import './WalletInfo.scss';
 </style>
-../../core/services/wallet/wallet-service

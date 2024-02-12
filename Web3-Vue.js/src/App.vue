@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import AppHeader from './features/header/AppHeader.vue';
-import { Web3Service } from './core/services/web3-service';
 import { WalletService } from './core/services/wallet/wallet-service';
 
 //srv
-const web3Srv = new Web3Service();
 const walletSrv = new WalletService();
 
 //lifecycle hooks
 onMounted(async () => {
     await walletSrv.connectWallet();
-    await web3Srv.connectWeb3();
+    await walletSrv.connectWeb3();
 });
 //
 </script>
@@ -35,11 +33,5 @@ body {
         margin: 0;
         padding: 0;
     }
-
-    a {
-        text-decoration: none !important;
-        color: black !important;
-    }
 }
 </style>
-./core/services/wallet/wallet-service

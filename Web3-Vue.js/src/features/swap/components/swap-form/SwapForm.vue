@@ -19,6 +19,7 @@ import { BlockchainName } from '../../../../core/constants/blockchain-names';
 import { BLOCKCHAIN_IDS } from '../../../../core/constants/blockchain-ids';
 import { SwapFormService } from '../../../../core/services/swap-form-service';
 
+//hooks
 const store = useStore<StoreState>();
 
 //refs
@@ -32,7 +33,6 @@ const toAmount = ref<BigNumber | null>(null);
 const selectedTokenBalance = ref<number | null>(null);
 
 //services
-const web3Srv = new Web3Service();
 const walletSrv = new WalletService();
 const swapFormSrv = new SwapFormService();
 
@@ -47,6 +47,7 @@ const to = computed<AssetType>(() => store.state.swapForm.to);
 const showBalance = computed<boolean>(() => !!fromToken.value && !isBalanceLoading.value);
 const showFromTokenSelect = computed<boolean>(() => !isFromTokenListLoading.value && !!fromTokenList.value.length);
 const showToTokenSelect = computed<boolean>(() => !isToTokenListLoading.value && !!toTokenList.value.length);
+const balanceShortened = computed<string>(() => Utils.shortenAmount(selectedTokenBalance.value));
 
 //funcs
 const setFromBlockchain = (option: SelectOption): void => {
@@ -62,11 +63,8 @@ const setFromAmount = (value: string): void => {
 };
 
 const setFromToken = async (token: SelectOption): Promise<void> => {
-    swapFormSrv.setFromToken(token as TokenOption);
-};
-
-const setFromDecimals = (): void => {
-    swapFormSrv.setFromDecimals();
+    await swapFormSrv.setFromToken(token as TokenOption);
+    await swapFormSrv.setFromDecimals();
 };
 
 const removeFromToken = (): void => {
@@ -107,7 +105,7 @@ const onChangeFromBlockchain = async (blockchain: BlockchainName): Promise<void>
 const receiveFromTokenBalance = async (): Promise<void> => {
     try {
         isBalanceLoading.value = true;
-        const balance = await web3Srv.getBalance(walletAddress.value!, fromAddress.value!, fromBlockchain.value!);
+        const balance = await Web3Service.getBalance(walletAddress.value!, fromAddress.value!, fromBlockchain.value!);
         setSelectedTokenBalance(balance);
     } finally {
         isBalanceLoading.value = false;
@@ -122,8 +120,6 @@ watch(fromBlockchain, async (blockchain) => {
 watch(toBlockchain, async () => await setToTokenList());
 watch(fromToken, async () => {
     await receiveFromTokenBalance();
-    setFromDecimals();
-    console.log('DECIMALS', fromDecimals);
 });
 
 //lifecycle hooks
@@ -157,13 +153,14 @@ onMounted(async () => {});
             <div class="swap-form__from-amount">
                 <InputText v-model="fromAmount" :id="'fromAmount'" :label="'Input amount'" :debounce="200" @on-input="setFromAmount" />
 
-                <p v-if="showBalance">Balance: {{ `${selectedTokenBalance} ${fromToken}` }}</p>
+                <p v-if="showBalance">Balance: {{ `${balanceShortened} ${fromToken}` }}</p>
                 <div v-else-if="isBalanceLoading" class="swap-form__from-loader">
                     <p>Balance loading...</p>
                     <AppLoader />
                 </div>
             </div>
         </section>
+
         <section class="swap-form__to">
             <InputSelect
                 :options="SELECT_TARGET_CHAINS"
@@ -211,22 +208,29 @@ onMounted(async () => {});
         gap: 10px;
 
         &-amount {
+            display: flex;
+            flex-direction: column;
+            align-items: baseline;
+            gap: 10px;
             font-size: 20px;
-
-            p {
-                margin: 5px;
-            }
         }
 
         &-loader,
         &-not-selected-chain {
-            width: 250px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             font-size: 20px;
-            height: 31px;
+            height: 20px;
+        }
+
+        &-not-selected-chain {
+            width: 250px;
+        }
+
+        &-loader {
+            white-space: nowrap;
         }
     }
 }

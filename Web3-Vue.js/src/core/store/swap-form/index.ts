@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { SwapFormActions } from './actions';
 import type { SwapFormState } from './model';
 import { SwapFormMutations } from './mutations';
@@ -9,14 +10,14 @@ export const SwapFormModule = {
             address: null,
             token: null,
             decimals: null,
-            amount: null
+            amount: new BigNumber(0)
         },
         to: {
             blockchain: null,
             address: null,
             token: null,
             decimals: null,
-            amount: null
+            amount: new BigNumber(0)
         }
     }),
     mutations: SwapFormMutations,

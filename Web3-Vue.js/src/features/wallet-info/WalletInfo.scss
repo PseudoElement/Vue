@@ -1,4 +1,12 @@
 .wallet-info-container {
     width: 100%;
     max-width: 800px;
+    h2,
+    h3 {
+        margin-bottom: 10px;
+    }
+}
+
+h3 {
+    white-space: nowrap;
 }

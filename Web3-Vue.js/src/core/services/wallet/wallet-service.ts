@@ -8,6 +8,10 @@ export class WalletService {
         this._store = useStore<StoreState>();
     }
 
+    public connectWeb3(): void {
+        this._store.commit('connectWeb3');
+    }
+
     public async connectWallet(): Promise<void> {
         await this._store.dispatch('connectWallet');
         const isConnectedWallet = this._store.state.wallet.isConnected;

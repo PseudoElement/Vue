@@ -7,7 +7,7 @@ export interface AssetType {
     blockchain: BlockchainName | null;
     address: string | null;
     decimals: number | null;
-    amount: BigNumber | null;
+    amount: BigNumber;
 }
 
 export interface ChainOption extends SelectOption {

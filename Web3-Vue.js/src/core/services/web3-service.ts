@@ -1,5 +1,3 @@
-import { Store, useStore } from 'vuex';
-import { StoreState } from '../store/models/store-types';
 import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import { ERC20_TOKEN_ABI } from '../constants/abi/erc20-token-abi';
@@ -7,19 +5,22 @@ import { TokenService } from './token-service';
 import { BlockchainName } from '../constants/blockchain-names';
 import { RPC_LIST } from '../constants/rpc-list';
 import { AmountParser } from './amount-parser/amount-parser';
+import { AppContractAbi } from './swap/models/swap-types';
 
 export class Web3Service {
-    private _store: Store<StoreState>;
+    public static encodeTxData(abi: AppContractAbi, methodName: string, methodArgs: string[]): string {
+        const web3 = new Web3();
+        const found = abi.find((a) => a.name === methodName);
 
-    constructor() {
-        this._store = useStore<StoreState>();
+        if (!found) {
+            throw new Error(`Abi method not found!`);
+        }
+        const data = web3.eth.abi.encodeFunctionCall(found, methodArgs);
+
+        return data;
     }
 
-    public connectWeb3(): void {
-        this._store.commit('connectWeb3');
-    }
-
-    public async getBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
+    public static async getBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
         const balance = TokenService.isNative(tokenAddress)
             ? await this._getNativeBalance(walletAddress)
             : await this._getNotNativeBalance(walletAddress, tokenAddress, blockchain);
@@ -27,7 +28,7 @@ export class Web3Service {
         return balance;
     }
 
-    public async getDecimals(blockchain: BlockchainName, tokenAddress: string): Promise<number> {
+    public static async getDecimals(blockchain: BlockchainName, tokenAddress: string): Promise<number> {
         const web3 = new Web3(new Web3.providers.HttpProvider(RPC_LIST[blockchain]));
         const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
         const decimals = (await contract.methods.decimals().call()) as number;
@@ -35,7 +36,7 @@ export class Web3Service {
         return new BigNumber(decimals).toNumber();
     }
 
-    private async _getNativeBalance(walletAddress: string): Promise<BigNumber> {
+    private static async _getNativeBalance(walletAddress: string): Promise<BigNumber> {
         const web3 = new Web3(window.ethereum);
         const weiAmount = await web3.eth.getBalance(walletAddress);
         const amount = web3.utils.fromWei(weiAmount, 'ether');
@@ -43,7 +44,7 @@ export class Web3Service {
         return new BigNumber(amount);
     }
 
-    private async _getNotNativeBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
+    private static async _getNotNativeBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
         try {
             const web3 = new Web3(new Web3.providers.HttpProvider(RPC_LIST[blockchain]));
             const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
