@@ -6,7 +6,7 @@ import { ERC20_TOKEN_ABI } from '../../core/constants/abi/erc20-token-abi';
 import { StoreState } from '../../core/store/models/store-types';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
-import { Web3Service } from '../../core/services/web3-service';
+import { Web3Service } from '../../core/services/web3-service/web3-service';
 import { AmountParser } from '../../core/services/amount-parser/amount-parser';
 
 //hooks
@@ -25,21 +25,6 @@ const swap = async (): Promise<void> => {
     const methodName = 'transfer';
     const methodArgs = [walletAddress.value!, amountWei];
     const data = Web3Service.encodeTxData(ERC20_TOKEN_ABI, methodName, methodArgs);
-    console.log({
-        amountWei,
-        methodName,
-        methodArgs,
-        data
-    });
-    await SwapService.callContractMethod({
-        abi: ERC20_TOKEN_ABI,
-        fromAddress: walletAddress.value!,
-        toAddress: walletAddress.value!,
-        value: amountWei,
-        methodName,
-        methodArgs,
-        data
-    });
 };
 
 //watchers

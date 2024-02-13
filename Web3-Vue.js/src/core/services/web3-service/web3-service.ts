@@ -1,13 +1,32 @@
-import Web3 from 'web3';
+import Web3, { FMT_BYTES, FMT_NUMBER } from 'web3';
 import BigNumber from 'bignumber.js';
-import { ERC20_TOKEN_ABI } from '../constants/abi/erc20-token-abi';
-import { TokenService } from './token-service';
-import { BlockchainName } from '../constants/blockchain-names';
-import { RPC_LIST } from '../constants/rpc-list';
-import { AmountParser } from './amount-parser/amount-parser';
-import { AppContractAbi } from './swap/models/swap-types';
+import { ERC20_TOKEN_ABI } from '../../constants/abi/erc20-token-abi';
+import { TokenService } from '../token-service';
+import { BlockchainName } from '../../constants/blockchain-names';
+import { RPC_LIST } from '../../constants/rpc-list';
+import { AmountParser } from '../amount-parser/amount-parser';
+import { AppContractAbi } from '../swap/models/swap-types';
+import { TxObject, GetTxObjectParams, EstimateGasParams } from './models/web3-service-types';
+import { GAS_CONFIG, GAS_PRICE_CONFIG } from './constants/gas-config';
+import { useStore } from 'vuex';
+import { StoreState } from '../../store/models/store-types';
 
 export class Web3Service {
+    public static async getTxObject({ contractAddress, data, value, decimals }: GetTxObjectParams): Promise<TxObject> {
+        const store = useStore<StoreState>();
+        const walletAddress = store.state.wallet.address || '';
+        const gas = await this.estimateGas({ from: walletAddress, to: walletAddress, data, value });
+        const gasPrice = await this.getGasPrice();
+
+        return {
+            data,
+            to: contractAddress,
+            ...(value && { value: AmountParser.toWei(value, decimals) }),
+            gas,
+            gasPrice
+        };
+    }
+
     public static encodeTxData(abi: AppContractAbi, methodName: string, methodArgs: string[]): string {
         const web3 = new Web3();
         const found = abi.find((a) => a.name === methodName);
@@ -18,6 +37,29 @@ export class Web3Service {
         const data = web3.eth.abi.encodeFunctionCall(found, methodArgs);
 
         return data;
+    }
+
+    public static async estimateGas({ from, to, value, data }: EstimateGasParams): Promise<number> {
+        const web3 = new Web3();
+        const params = {
+            from,
+            to,
+            value: AmountParser.stringifyAmount(value || 0),
+            ...(data && { data })
+        };
+        const gas = await web3.eth.estimateGas(params, undefined, GAS_CONFIG);
+
+        return gas;
+    }
+
+    /**
+     * Calculates the average price per unit of gas according to web3.
+     * @returns Average gas price in wei.
+     */
+    public static getGasPrice(): Promise<string> {
+        const web3 = new Web3();
+
+        return web3.eth.getGasPrice(GAS_PRICE_CONFIG);
     }
 
     public static async getBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {

@@ -1,7 +1,7 @@
 import { ActionContext } from 'vuex';
 import { SwapFormState } from './model';
 import { StoreState } from '../models/store-types';
-import { Web3Service } from '../../services/web3-service';
+import { Web3Service } from '../../services/web3-service/web3-service';
 import { TokenService } from '../../services/token-service';
 
 export const SwapFormActions = {

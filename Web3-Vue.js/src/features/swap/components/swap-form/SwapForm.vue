@@ -10,7 +10,7 @@ import { OpenOceanApiService } from '../../../../core/services/open-ocean/open-o
 import { Utils } from '../../../../core/utils/utils';
 import { OpenOceanParser } from '../../../../core/services/open-ocean/open-ocean-parser';
 import BigNumber from 'bignumber.js';
-import { Web3Service } from '../../../../core/services/web3-service';
+import { Web3Service } from '../../../../core/services/web3-service/web3-service';
 import { useStore } from 'vuex';
 import { StoreState } from '@/src/core/store/models/store-types';
 import { SelectOption } from '@/src/shared/inputs/input-select/model';
