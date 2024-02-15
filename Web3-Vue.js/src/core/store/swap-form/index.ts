@@ -8,14 +8,14 @@ export const SwapFormModule = {
         from: {
             blockchain: null,
             address: null,
-            token: null,
+            symbol: null,
             decimals: null,
             amount: new BigNumber(0)
         },
         to: {
             blockchain: null,
             address: null,
-            token: null,
+            symbol: null,
             decimals: null,
             amount: new BigNumber(0)
         }
