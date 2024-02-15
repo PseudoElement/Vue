@@ -2,6 +2,8 @@ import type { ActionContext } from 'vuex';
 import type { WalletState } from './model';
 import type { StoreState } from '../models/store-types';
 import { WalletApiService } from '../../services/wallet/wallet-api-service';
+import { Utils } from '../../utils/utils';
+import { RPC_LIST } from '../../constants/rpc-list';
 
 export const WalletActions = {
     async connectWallet(ctx: ActionContext<WalletState, StoreState>) {
@@ -21,7 +23,9 @@ export const WalletActions = {
 
     async setChainId(ctx: ActionContext<WalletState, StoreState>) {
         const chainId = await WalletApiService.getChainId();
+        const blockchainName = Utils.getChainNameById(chainId);
 
+        ctx.commit('changeWeb3Provider', RPC_LIST[blockchainName]);
         ctx.commit('setChainId', chainId);
     },
 

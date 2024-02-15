@@ -1,16 +1,17 @@
 import Web3, { Web3Error } from 'web3';
 import { CallContractParams, SendContractParams, SendTxParams } from './models/swap-types';
+import { TxHash } from '../../dexes/models/trade-common-types';
 
 export class SwapService {
     private static _web3: Web3 = new Web3();
 
-    public static async sendTransaction({ fromAddress, toAddress, value, data }: SendTxParams): Promise<string> {
+    public static async sendTransaction({ fromAddress, to, value, data }: SendTxParams): Promise<TxHash> {
         try {
-            const gas = await this._web3.eth.estimateGas({ from: fromAddress, to: toAddress, value, data });
+            const gas = await this._web3.eth.estimateGas({ from: fromAddress, to: to, value, data });
             const res = await this._web3.eth
                 .sendTransaction({
                     from: fromAddress,
-                    to: toAddress,
+                    to,
                     value,
                     data,
                     gas
@@ -24,7 +25,7 @@ export class SwapService {
     }
 
     public static async sendContractMethod(p: SendContractParams): Promise<string> {
-        const contract = new this._web3.eth.Contract(p.abi, p.contractAddress);
+        const contract = new this._web3.eth.Contract(p.abi, p?.contractAddress);
         const res = await contract.methods[p.methodName](...p.methodArgs)
             .send({
                 from: p.fromAddress,

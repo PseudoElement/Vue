@@ -4,10 +4,10 @@ import { SwapFormState } from './model';
 
 export const SwapFormMutations = {
     setFromToken(state: SwapFormState, token: Partial<TokenOption>): void {
-        state.from = { ...state.from, address: token.address!, token: token.value! };
+        state.from = { ...state.from, address: token.address!, symbol: token.value! };
     },
     setToToken(state: SwapFormState, token: Partial<TokenOption>): void {
-        state.to = { ...state.to, address: token.address!, token: token.value! };
+        state.to = { ...state.to, address: token.address!, symbol: token.value! };
     },
     setFromDecimals(state: SwapFormState, decimals: number): void {
         state.from = { ...state.from, decimals };
@@ -22,3 +22,5 @@ export const SwapFormMutations = {
         state.to = { ...state.to, blockchain };
     }
 };
+
+export type SwapFormMutationsType = keyof typeof SwapFormMutations;

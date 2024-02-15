@@ -4,7 +4,8 @@ export type AppContractAbi = ReadonlyArray<AbiFunctionFragment>;
 
 export interface SendTxParams {
     fromAddress: string;
-    toAddress: string;
+    /* contract address */
+    to: string;
     value: string;
     data: string;
 }

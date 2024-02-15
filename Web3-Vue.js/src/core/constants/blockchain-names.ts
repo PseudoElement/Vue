@@ -6,7 +6,8 @@ export const BLOCKCHAIN_NAMES = {
     SCROLL: 'SCROLL',
     POLYGON: 'POLYGON',
     LINEA: 'LINEA',
-    AVALANCHE: 'AVALANCHE'
+    AVALANCHE: 'AVALANCHE',
+    SEPOLIA: 'SEPOLIA'
 } as const;
 
 export type BlockchainName = (typeof BLOCKCHAIN_NAMES)[keyof typeof BLOCKCHAIN_NAMES];

@@ -38,7 +38,7 @@ const swapFormSrv = new SwapFormService();
 
 //computeds
 const fromBlockchain = computed(() => store.state.swapForm.from.blockchain);
-const fromToken = computed(() => store.state.swapForm.from.token);
+const fromToken = computed(() => store.state.swapForm.from.symbol);
 const fromAddress = computed(() => store.state.swapForm.from.address);
 const fromDecimals = computed(() => store.state.swapForm.from.decimals);
 const toBlockchain = computed(() => store.state.swapForm.to.blockchain);
@@ -83,7 +83,11 @@ const setFromTokenList = async (): Promise<void> => {
     isFromTokenListLoading.value = true;
     const chainId = Utils.getChainIdByName(fromBlockchain.value!);
     const openOceanTokens = await OpenOceanApiService.getTokenList(chainId);
-    fromTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
+    if (openOceanTokens) {
+        fromTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
+    } else {
+        fromTokenList.value = [];
+    }
     isFromTokenListLoading.value = false;
 };
 
@@ -91,7 +95,11 @@ const setToTokenList = async (): Promise<void> => {
     isToTokenListLoading.value = true;
     const chainId = Utils.getChainIdByName(to.value.blockchain!);
     const openOceanTokens = await OpenOceanApiService.getTokenList(chainId);
-    toTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
+    if (openOceanTokens) {
+        toTokenList.value = OpenOceanParser.mapTokens(openOceanTokens);
+    } else {
+        toTokenList.value = [];
+    }
     isToTokenListLoading.value = false;
 };
 
@@ -144,7 +152,7 @@ onMounted(async () => {});
                 :show-value="true"
                 @select-value="setFromToken"
             />
-            <div class="swap-form__from-not-selected-chain" v-else-if="!fromTokenList.length">Select source chain.</div>
+            <div class="swap-form__from-not-selected-chain" v-else-if="!isFromTokenListLoading">Select source chain.</div>
             <div class="swap-form__from-loader" v-else>
                 <p>Tokens loading...</p>
                 <AppLoader />
@@ -172,12 +180,12 @@ onMounted(async () => {});
             <InputSelect
                 v-if="showToTokenSelect"
                 :options="toTokenList"
-                :value="to.token"
+                :value="to.symbol"
                 :title="'Select target token'"
                 :show-value="true"
                 @select-value="setToToken"
             />
-            <div class="swap-form__to-not-selected-chain" v-else-if="!toTokenList.length">Select target chain.</div>
+            <div class="swap-form__to-not-selected-chain" v-else-if="!isToTokenListLoading">Select target chain.</div>
             <div class="swap-form__to-loader" v-else>
                 <p>Tokens loading...</p>
                 <AppLoader />

@@ -3,7 +3,7 @@ import { SelectOption } from '@/src/shared/inputs/input-select/model';
 import BigNumber from 'bignumber.js';
 
 export interface AssetType {
-    token: string | null;
+    symbol: string | null;
     blockchain: BlockchainName | null;
     address: string | null;
     decimals: number | null;

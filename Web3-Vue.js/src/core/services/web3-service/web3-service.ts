@@ -1,4 +1,4 @@
-import Web3, { FMT_BYTES, FMT_NUMBER } from 'web3';
+import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import { ERC20_TOKEN_ABI } from '../../constants/abi/erc20-token-abi';
 import { TokenService } from '../token-service';
@@ -27,7 +27,7 @@ export class Web3Service {
         };
     }
 
-    public static encodeTxData(abi: AppContractAbi, methodName: string, methodArgs: string[]): string {
+    public static encodeTxData(abi: AppContractAbi, methodName: string, methodArgs: any[]): string {
         const web3 = new Web3();
         const found = abi.find((a) => a.name === methodName);
 

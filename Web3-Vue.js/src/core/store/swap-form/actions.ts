@@ -11,3 +11,5 @@ export const SwapFormActions = {
         ctx.state.from.decimals = decimals;
     }
 };
+
+export type SwapFormActionsType = keyof typeof SwapFormActions;

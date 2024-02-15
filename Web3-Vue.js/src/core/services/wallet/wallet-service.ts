@@ -1,5 +1,9 @@
 import { Store, useStore } from 'vuex';
 import type { StoreState } from '../../store/models/store-types';
+import { RPC_LIST } from '../../constants/rpc-list';
+import { Utils } from '../../utils/utils';
+import BigNumber from 'bignumber.js';
+import { appCommit, appDispatch } from '../../store/store';
 
 export class WalletService {
     private _store: Store<StoreState>;
@@ -9,11 +13,11 @@ export class WalletService {
     }
 
     public connectWeb3(): void {
-        this._store.commit('connectWeb3');
+        appCommit('connectWeb3');
     }
 
     public async connectWallet(): Promise<void> {
-        await this._store.dispatch('connectWallet');
+        await appDispatch('connectWallet');
         const isConnectedWallet = this._store.state.wallet.isConnected;
 
         if (isConnectedWallet) {
@@ -23,16 +27,16 @@ export class WalletService {
     }
 
     public disconnectWallet(): void {
-        this._store.dispatch('disconnectWallet');
+        appDispatch('disconnectWallet');
         this._onDisconnectWallet();
     }
 
     public setChainId(): void {
-        this._store.dispatch('setChainId');
+        appDispatch('setChainId');
     }
 
     public async switchChain(chainId: number): Promise<void> {
-        await this._store.dispatch('switchChain', chainId);
+        await appDispatch('switchChain', chainId);
     }
 
     private _onConnectWallet(): void {
@@ -46,13 +50,16 @@ export class WalletService {
 
     private _listenAccountChanges(): void {
         window.ethereum?.on('accountsChanged', (accounts: any) => {
-            this._store.commit('setWalletAddress', accounts[0] ?? null);
+            appCommit('setWalletAddress', accounts[0] ?? null);
         });
     }
 
     private _listenChainChanges(): void {
         window.ethereum?.on('chainChanged', (chainId: any) => {
-            this._store.commit('setChainId', chainId);
+            appCommit('setChainId', chainId);
+
+            const blockchainName = Utils.getChainNameById(new BigNumber(chainId).toNumber());
+            appCommit('changeWeb3Provider', RPC_LIST[blockchainName]);
         });
     }
 }

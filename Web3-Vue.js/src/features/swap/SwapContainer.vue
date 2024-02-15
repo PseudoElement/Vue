@@ -1,13 +1,10 @@
 <script lang="ts" setup>
-import { SwapService } from '../../core/services/swap/swap-service';
 import AppButton from '../../shared/button/AppButton.vue';
 import SwapForm from './components/swap-form/SwapForm.vue';
-import { ERC20_TOKEN_ABI } from '../../core/constants/abi/erc20-token-abi';
 import { StoreState } from '../../core/store/models/store-types';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
-import { Web3Service } from '../../core/services/web3-service/web3-service';
-import { AmountParser } from '../../core/services/amount-parser/amount-parser';
+import { UniswapV2Trade } from '../../core/dexes/uniswap-v2/uniswap-v2-trade';
 
 //hooks
 const store = useStore<StoreState>();
@@ -15,16 +12,31 @@ const store = useStore<StoreState>();
 //refs
 
 //computeds
-const walletAddress = computed(() => store.state.wallet.address);
-const fromAmount = computed(() => store.state.swapForm.from.amount);
-const fromDecimals = computed(() => store.state.swapForm.from.decimals);
+const fromToken = computed(() => store.state.swapForm.from);
+const toToken = computed(() => store.state.swapForm.to);
 
 //funcs
 const swap = async (): Promise<void> => {
-    const amountWei = AmountParser.toWei(fromAmount.value, fromDecimals.value!);
-    const methodName = 'transfer';
-    const methodArgs = [walletAddress.value!, amountWei];
-    const data = Web3Service.encodeTxData(ERC20_TOKEN_ABI, methodName, methodArgs);
+    const trade = new UniswapV2Trade();
+    try {
+        const hash = await trade.swap(
+            {
+                address: fromToken.value.address!,
+                amount: fromToken.value.amount,
+                decimals: fromToken.value.decimals!,
+                symbol: fromToken.value.symbol!
+            },
+            {
+                address: toToken.value.address!,
+                decimals: toToken.value.decimals!,
+                symbol: toToken.value.symbol!
+            }
+        );
+
+        console.log(hash);
+    } catch (err) {
+        console.info(err);
+    }
 };
 
 //watchers

@@ -1,6 +1,6 @@
 import type { InjectionKey } from 'vue';
 import { createStore, type Store as VuexStore } from 'vuex';
-import type { StoreState } from './models/store-types';
+import type { StoreActionsType, StoreMutationsType, StoreState } from './models/store-types';
 import { WalletModule } from '../store/wallet/index';
 import { AppWeb3Module } from './web3';
 import { SwapFormModule } from './swap-form';
@@ -16,3 +16,6 @@ export const store = createStore<StoreState>({
         swapForm: SwapFormModule
     }
 });
+
+export const appDispatch = <T extends StoreActionsType>(action: T, payload?: any) => store.dispatch(action, payload);
+export const appCommit = <T extends StoreMutationsType>(mutation: T, payload?: any) => store.commit(mutation, payload);

@@ -11,6 +11,9 @@ export const WalletMutations = {
         state.chainId = null;
         state.isConnected = false;
     },
+    setWalletAddress(state: WalletState, walletAddress: string): void {
+        state.address = walletAddress;
+    },
     setChainId(state: WalletState, chainId: number | string): void {
         if (typeof chainId == 'number') {
             state.chainId = chainId;
