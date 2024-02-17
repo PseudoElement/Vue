@@ -19,3 +19,4 @@ export const store = createStore<StoreState>({
 
 export const appDispatch = <T extends StoreActionsType>(action: T, payload?: any) => store.dispatch(action, payload);
 export const appCommit = <T extends StoreMutationsType>(mutation: T, payload?: any) => store.commit(mutation, payload);
+export const appState = (): StoreState => store.state;

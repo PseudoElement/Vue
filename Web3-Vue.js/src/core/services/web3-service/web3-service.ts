@@ -66,7 +66,7 @@ export class Web3Service {
     }
 
     public static async getDecimals(blockchain: BlockchainName, tokenAddress: string): Promise<number> {
-        const web3 = new Web3(new Web3.providers.HttpProvider(RPC_LIST[blockchain]));
+        const web3 = Injector.web3;
         const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
         const decimals = (await contract.methods.decimals().call()) as number;
 
@@ -74,16 +74,15 @@ export class Web3Service {
     }
 
     private static async _getNativeBalance(walletAddress: string): Promise<BigNumber> {
-        const web3 = new Web3(window.ethereum);
-        const weiAmount = await web3.eth.getBalance(walletAddress);
-        const amount = web3.utils.fromWei(weiAmount, 'ether');
+        const weiAmount = await Injector.web3.eth.getBalance(walletAddress);
+        const amount = Injector.web3.utils.fromWei(weiAmount, 'ether');
 
         return new BigNumber(amount);
     }
 
     private static async _getNotNativeBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
         try {
-            const web3 = new Web3(new Web3.providers.HttpProvider(RPC_LIST[blockchain]));
+            const web3 = Injector.web3;
             const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
             const [weiAmount, decimals] = (await Promise.all([
                 contract.methods.balanceOf(walletAddress).call(),

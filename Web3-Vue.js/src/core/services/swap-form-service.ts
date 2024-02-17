@@ -1,37 +1,29 @@
-import { Store, useStore } from 'vuex';
-import { StoreState } from '../store/models/store-types';
 import { TokenOption } from '@/src/features/swap/components/swap-form/models/swap-form-types';
 import { BlockchainName } from '../constants/blockchain-names';
-import { appCommit, appDispatch } from '../store/store';
+import { Injector } from './injector/injector';
 
 export class SwapFormService {
-    private _store: Store<StoreState>;
-
-    constructor() {
-        this._store = useStore<StoreState>();
+    public static setFromToken(token: TokenOption): void {
+        Injector.storeCommit('setFromToken', token);
     }
 
-    public setFromToken(token: TokenOption): void {
-        appCommit('setFromToken', token);
+    public static setFromDecimals(): void {
+        Injector.storeDispatch('setFromDecimals');
     }
 
-    public setFromDecimals(): void {
-        appDispatch('setFromDecimals');
+    public static setToToken(token: TokenOption): void {
+        Injector.storeCommit('setToToken', token);
     }
 
-    public setToToken(token: TokenOption): void {
-        appCommit('setToToken', token);
+    public static removeFromToken(): void {
+        Injector.storeCommit('setFromToken', { address: null, value: null });
     }
 
-    public removeFromToken(): void {
-        appCommit('setFromToken', { address: null, value: null });
+    public static setFromBlockchain(blockchain: BlockchainName): void {
+        Injector.storeCommit('setFromBlockchain', blockchain);
     }
 
-    public setFromBlockchain(blockchain: BlockchainName): void {
-        appCommit('setFromBlockchain', blockchain);
-    }
-
-    public setToBlockchain(blockchain: BlockchainName): void {
-        appCommit('setToBlockchain', blockchain);
+    public static setToBlockchain(blockchain: BlockchainName): void {
+        Injector.storeCommit('setToBlockchain', blockchain);
     }
 }

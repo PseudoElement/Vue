@@ -1,24 +1,16 @@
-import { Store, useStore } from 'vuex';
-import type { StoreState } from '../../store/models/store-types';
 import { RPC_LIST } from '../../constants/rpc-list';
 import { Utils } from '../../utils/utils';
 import BigNumber from 'bignumber.js';
-import { appCommit, appDispatch } from '../../store/store';
+import { Injector } from '../injector/injector';
 
 export class WalletService {
-    private _store: Store<StoreState>;
-
-    constructor() {
-        this._store = useStore<StoreState>();
+    public static connectWeb3(): void {
+        Injector.storeCommit('connectWeb3');
     }
 
-    public connectWeb3(): void {
-        appCommit('connectWeb3');
-    }
-
-    public async connectWallet(): Promise<void> {
-        await appDispatch('connectWallet');
-        const isConnectedWallet = this._store.state.wallet.isConnected;
+    public static async connectWallet(): Promise<void> {
+        await Injector.storeDispatch('connectWallet');
+        const isConnectedWallet = Injector.storeState.wallet.isConnected;
 
         if (isConnectedWallet) {
             this.setChainId();
@@ -26,40 +18,41 @@ export class WalletService {
         }
     }
 
-    public disconnectWallet(): void {
-        appDispatch('disconnectWallet');
+    public static disconnectWallet(): void {
+        Injector.storeDispatch('disconnectWallet');
         this._onDisconnectWallet();
     }
 
-    public setChainId(): void {
-        appDispatch('setChainId');
+    public static setChainId(): void {
+        Injector.storeDispatch('setChainId');
     }
 
-    public async switchChain(chainId: number): Promise<void> {
-        await appDispatch('switchChain', chainId);
+    public static async switchChain(chainId: number): Promise<void> {
+        await Injector.storeDispatch('switchChain', chainId);
     }
 
-    private _onConnectWallet(): void {
+    private static _onConnectWallet(): void {
         this._listenAccountChanges();
         this._listenChainChanges();
     }
 
-    private _onDisconnectWallet(): void {
+    private static _onDisconnectWallet(): void {
         window.ethereum?.removeAllListeners();
     }
 
-    private _listenAccountChanges(): void {
+    private static _listenAccountChanges(): void {
         window.ethereum?.on('accountsChanged', (accounts: any) => {
-            appCommit('setWalletAddress', accounts[0] ?? null);
+            Injector.storeCommit('setWalletAddress', accounts[0] ?? null);
         });
     }
 
-    private _listenChainChanges(): void {
+    private static _listenChainChanges(): void {
         window.ethereum?.on('chainChanged', (chainId: any) => {
-            appCommit('setChainId', chainId);
+            Injector.storeCommit('setChainId', chainId);
 
             const blockchainName = Utils.getChainNameById(new BigNumber(chainId).toNumber());
-            appCommit('changeWeb3Provider', RPC_LIST[blockchainName]);
+            Injector.storeCommit('changeWeb3Provider', RPC_LIST[blockchainName]);
+            setTimeout(() => console.log(Injector.web3.currentProvider), 1000);
         });
     }
 }

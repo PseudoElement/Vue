@@ -4,12 +4,11 @@ import AppHeader from './features/header/AppHeader.vue';
 import { WalletService } from './core/services/wallet/wallet-service';
 
 //srv
-const walletSrv = new WalletService();
 
 //lifecycle hooks
 onMounted(async () => {
-    await walletSrv.connectWallet();
-    await walletSrv.connectWeb3();
+    await WalletService.connectWallet();
+    await WalletService.connectWeb3();
 });
 //
 </script>

@@ -11,14 +11,13 @@ const store = useStore<StoreState>();
 const chainId = computed(() => store.state.wallet.chainId);
 const walletAddress = computed(() => store.state.wallet.address);
 const isConnected = computed(() => store.state.wallet.isConnected);
-const walletSrv = new WalletService();
 
 //funcs
 const onConnectButtonClick = (): void => {
     if (isConnected.value) {
-        walletSrv.disconnectWallet();
+        WalletService.disconnectWallet();
     } else {
-        walletSrv.connectWallet();
+        WalletService.connectWallet();
     }
 };
 

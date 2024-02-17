@@ -32,10 +32,6 @@ const fromAmount = ref<BigNumber>(new BigNumber(0));
 const toAmount = ref<BigNumber | null>(null);
 const selectedTokenBalance = ref<number | null>(null);
 
-//services
-const walletSrv = new WalletService();
-const swapFormSrv = new SwapFormService();
-
 //computeds
 const fromBlockchain = computed(() => store.state.swapForm.from.blockchain);
 const fromToken = computed(() => store.state.swapForm.from.symbol);
@@ -51,11 +47,11 @@ const balanceShortened = computed<string>(() => Utils.shortenAmount(selectedToke
 
 //funcs
 const setFromBlockchain = (option: SelectOption): void => {
-    swapFormSrv.setFromBlockchain((option as ChainOption).value);
+    SwapFormService.setFromBlockchain((option as ChainOption).value);
 };
 
 const setToBlockchain = (option: SelectOption): void => {
-    swapFormSrv.setToBlockchain((option as ChainOption).value);
+    SwapFormService.setToBlockchain((option as ChainOption).value);
 };
 
 const setFromAmount = (value: string): void => {
@@ -63,16 +59,16 @@ const setFromAmount = (value: string): void => {
 };
 
 const setFromToken = async (token: SelectOption): Promise<void> => {
-    await swapFormSrv.setFromToken(token as TokenOption);
-    await swapFormSrv.setFromDecimals();
+    await SwapFormService.setFromToken(token as TokenOption);
+    await SwapFormService.setFromDecimals();
 };
 
 const removeFromToken = (): void => {
-    swapFormSrv.removeFromToken();
+    SwapFormService.removeFromToken();
 };
 
 const setToToken = (token: SelectOption): void => {
-    swapFormSrv.setToToken(token as TokenOption);
+    SwapFormService.setToToken(token as TokenOption);
 };
 
 const setSelectedTokenBalance = (amount: BigNumber): void => {
@@ -105,7 +101,7 @@ const setToTokenList = async (): Promise<void> => {
 
 const onChangeFromBlockchain = async (blockchain: BlockchainName): Promise<void> => {
     const chainId = BLOCKCHAIN_IDS[blockchain];
-    await walletSrv.switchChain(chainId);
+    await WalletService.switchChain(chainId);
     await setFromTokenList();
     removeFromToken();
 };
