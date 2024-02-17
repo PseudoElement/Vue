@@ -1,6 +1,4 @@
-import { useStore } from 'vuex';
 import { SwapService } from '../../services/swap/swap-service';
-import { StoreState } from '../../store/models/store-types';
 import { UNISWAP_V2_CONTRACT_ADDRESS } from './constants/uniswap-v2-contract-address';
 import { Web3Service } from '../../services/web3-service/web3-service';
 import { UNISWAP_V2_ABI } from './constants/uniswap-v2-abi';
@@ -10,6 +8,7 @@ import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
 import { AbstractDexTrade } from '../abstract/abstract-dex-trade';
 import { DEXES } from '../models/dexes-list';
 import { TxHash } from '../models/trade-common-types';
+import { Injector } from '../../services/injector/injector';
 
 export class UniswapV2Trade extends AbstractDexTrade {
     public readonly type = DEXES.UNISWAP_V2;
@@ -25,7 +24,7 @@ export class UniswapV2Trade extends AbstractDexTrade {
     }
 
     private getTransactionParams(from: TokenInfo, to: TokenInfoWithoutAmount): SendTxParams {
-        const walletAddress = useStore<StoreState>().state.wallet.address as string;
+        const walletAddress = Injector.storeState.wallet.address as string;
         const amountInWei = AmountParser.toWei(from.amount, from.decimals);
         const amountOutMinWei = AmountParser.toWei(from.amount.multipliedBy(0.9), from.decimals);
         const path = [from.address, to.address];

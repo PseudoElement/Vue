@@ -1,10 +1,6 @@
-import BigNumber from 'bignumber.js';
+import { BlockchainName } from '../../constants/blockchain-names';
+import { AssetType } from '@/src/features/swap/components/swap-form/models/swap-form-types';
+import { NonNullableObject } from '../../utils/types';
 
-export interface TokenInfo {
-    address: string;
-    decimals: number;
-    symbol: string;
-    amount: BigNumber;
-}
-
+export type TokenInfo = NonNullableObject<AssetType> & { blockchain: BlockchainName };
 export type TokenInfoWithoutAmount = Omit<TokenInfo, 'amount'>;

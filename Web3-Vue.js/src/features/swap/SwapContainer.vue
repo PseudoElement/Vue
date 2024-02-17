@@ -5,6 +5,7 @@ import { StoreState } from '../../core/store/models/store-types';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 import { UniswapV2Trade } from '../../core/dexes/uniswap-v2/uniswap-v2-trade';
+import { TokenInfo, TokenInfoWithoutAmount } from '@/src/core/dexes/models/token-types';
 
 //hooks
 const store = useStore<StoreState>();
@@ -12,26 +13,14 @@ const store = useStore<StoreState>();
 //refs
 
 //computeds
-const fromToken = computed(() => store.state.swapForm.from);
-const toToken = computed(() => store.state.swapForm.to);
+const fromToken = computed(() => store.state.swapForm.from as TokenInfo);
+const toToken = computed(() => store.state.swapForm.to as TokenInfoWithoutAmount);
 
 //funcs
 const swap = async (): Promise<void> => {
     const trade = new UniswapV2Trade();
     try {
-        const hash = await trade.swap(
-            {
-                address: fromToken.value.address!,
-                amount: fromToken.value.amount,
-                decimals: fromToken.value.decimals!,
-                symbol: fromToken.value.symbol!
-            },
-            {
-                address: toToken.value.address!,
-                decimals: toToken.value.decimals!,
-                symbol: toToken.value.symbol!
-            }
-        );
+        const hash = await trade.swap(fromToken.value, toToken.value);
 
         console.log(hash);
     } catch (err) {

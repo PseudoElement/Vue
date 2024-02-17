@@ -1,14 +1,13 @@
-import Web3, { Web3Error } from 'web3';
+import { Web3Error } from 'web3';
 import { CallContractParams, SendContractParams, SendTxParams } from './models/swap-types';
 import { TxHash } from '../../dexes/models/trade-common-types';
+import { Injector } from '../injector/injector';
 
 export class SwapService {
-    private static _web3: Web3 = new Web3();
-
     public static async sendTransaction({ fromAddress, to, value, data }: SendTxParams): Promise<TxHash> {
         try {
-            const gas = await this._web3.eth.estimateGas({ from: fromAddress, to: to, value, data });
-            const res = await this._web3.eth
+            const gas = await Injector.web3.eth.estimateGas({ from: fromAddress, to: to, value, data });
+            const res = await Injector.web3.eth
                 .sendTransaction({
                     from: fromAddress,
                     to,
@@ -25,7 +24,7 @@ export class SwapService {
     }
 
     public static async sendContractMethod(p: SendContractParams): Promise<string> {
-        const contract = new this._web3.eth.Contract(p.abi, p?.contractAddress);
+        const contract = new Injector.web3.eth.Contract(p.abi, p?.contractAddress);
         const res = await contract.methods[p.methodName](...p.methodArgs)
             .send({
                 from: p.fromAddress,
@@ -40,7 +39,7 @@ export class SwapService {
     }
 
     public static async callContractMethod(p: CallContractParams): Promise<void> {
-        const contract = new this._web3.eth.Contract(p.abi, p.contractAddress);
+        const contract = new Injector.web3.eth.Contract(p.abi, p.contractAddress);
         const res = await contract.methods[p.methodName](...p.methodArgs).call({
             from: p.fromAddress,
             value: p.value,

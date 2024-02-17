@@ -8,13 +8,11 @@ import { AmountParser } from '../amount-parser/amount-parser';
 import { AppContractAbi } from '../swap/models/swap-types';
 import { TxObject, GetTxObjectParams, EstimateGasParams } from './models/web3-service-types';
 import { GAS_CONFIG, GAS_PRICE_CONFIG } from './constants/gas-config';
-import { useStore } from 'vuex';
-import { StoreState } from '../../store/models/store-types';
+import { Injector } from '../injector/injector';
 
 export class Web3Service {
     public static async getTxObject({ contractAddress, data, value, decimals }: GetTxObjectParams): Promise<TxObject> {
-        const store = useStore<StoreState>();
-        const walletAddress = store.state.wallet.address || '';
+        const walletAddress = Injector.storeState.wallet.address || '';
         const gas = await this.estimateGas({ from: walletAddress, to: walletAddress, data, value });
         const gasPrice = await this.getGasPrice();
 
@@ -28,13 +26,12 @@ export class Web3Service {
     }
 
     public static encodeTxData(abi: AppContractAbi, methodName: string, methodArgs: any[]): string {
-        const web3 = new Web3();
         const found = abi.find((a) => a.name === methodName);
 
         if (!found) {
             throw new Error(`Abi method not found!`);
         }
-        const data = web3.eth.abi.encodeFunctionCall(found, methodArgs);
+        const data = Injector.web3.eth.abi.encodeFunctionCall(found, methodArgs);
 
         return data;
     }
@@ -57,9 +54,7 @@ export class Web3Service {
      * @returns Average gas price in wei.
      */
     public static getGasPrice(): Promise<string> {
-        const web3 = new Web3();
-
-        return web3.eth.getGasPrice(GAS_PRICE_CONFIG);
+        return Injector.web3.eth.getGasPrice(GAS_PRICE_CONFIG);
     }
 
     public static async getBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
