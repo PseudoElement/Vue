@@ -1,13 +1,11 @@
 import BigNumber from 'bignumber.js';
-import Web3 from 'web3';
+import { Injector } from '../injector/injector';
 
 export class WalletApiService {
-    private static web3: Web3 = new Web3(window.ethereum);
-
     public static switchChain(chainId: number): void {
         return window.ethereum?.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: this.web3.utils.toHex(chainId) }]
+            params: [{ chainId: Injector.web3.utils.toHex(chainId) }]
         }) as void;
     }
 

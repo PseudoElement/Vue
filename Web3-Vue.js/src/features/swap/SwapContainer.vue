@@ -18,14 +18,10 @@ const toToken = computed(() => store.state.swapForm.to as TokenInfoWithoutAmount
 
 //funcs
 const swap = async (): Promise<void> => {
-    const trade = new UniswapV2Trade();
-    try {
-        const hash = await trade.swap(fromToken.value, toToken.value);
+    const trade = new UniswapV2Trade(fromToken.value, toToken.value);
+    const hash = await trade.swap();
 
-        console.log(hash);
-    } catch (err) {
-        console.info(err);
-    }
+    console.log('HASH - ', hash);
 };
 
 //watchers

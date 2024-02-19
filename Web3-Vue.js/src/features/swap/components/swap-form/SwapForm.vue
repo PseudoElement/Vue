@@ -28,7 +28,6 @@ const toTokenList = ref<TokenOption[]>([]);
 const isFromTokenListLoading = ref<boolean>(false);
 const isToTokenListLoading = ref<boolean>(false);
 const isBalanceLoading = ref<boolean>(false);
-const fromAmount = ref<BigNumber>(new BigNumber(0));
 const toAmount = ref<BigNumber | null>(null);
 const selectedTokenBalance = ref<number | null>(null);
 
@@ -36,7 +35,7 @@ const selectedTokenBalance = ref<number | null>(null);
 const fromBlockchain = computed(() => store.state.swapForm.from.blockchain);
 const fromToken = computed(() => store.state.swapForm.from.symbol);
 const fromAddress = computed(() => store.state.swapForm.from.address);
-const fromDecimals = computed(() => store.state.swapForm.from.decimals);
+// const fromAmount = computed(() => store.state.swapForm.from.amount);
 const toBlockchain = computed(() => store.state.swapForm.to.blockchain);
 const walletAddress = computed(() => store.state.wallet.address);
 const to = computed<AssetType>(() => store.state.swapForm.to);
@@ -55,7 +54,7 @@ const setToBlockchain = (option: SelectOption): void => {
 };
 
 const setFromAmount = (value: string): void => {
-    fromAmount.value = new BigNumber(value);
+    SwapFormService.setFromAmount(new BigNumber(value));
 };
 
 const setFromToken = async (token: SelectOption): Promise<void> => {
@@ -155,7 +154,7 @@ onMounted(async () => {});
             </div>
 
             <div class="swap-form__from-amount">
-                <InputText v-model="fromAmount" :id="'fromAmount'" :label="'Input amount'" :debounce="200" @on-input="setFromAmount" />
+                <InputText :id="'fromAmount'" :label="'Input amount'" :debounce="200" @on-input="setFromAmount" />
 
                 <p v-if="showBalance">Balance: {{ `${balanceShortened} ${fromToken}` }}</p>
                 <div v-else-if="isBalanceLoading" class="swap-form__from-loader">

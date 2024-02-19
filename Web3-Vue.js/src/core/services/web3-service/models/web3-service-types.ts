@@ -1,22 +1,23 @@
 import BigNumber from 'bignumber.js';
 
-export interface TxObject {
+export interface TxParams {
+    /* wallet address */
+    fromAddress: string;
     /* contract address */
-    to: string;
+    toAddress: string;
     /* encoded contract call returned value */
     data: string;
     /* vlaue in wei */
     value?: string;
-    gas?: number;
+    gas: string;
     /* wei amount */
-    gasPrice?: string;
+    gasPrice: string;
 }
 
 export interface GetTxObjectParams {
     contractAddress: string;
     data: string;
-    value?: string | BigNumber;
-    decimals?: number;
+    value: string;
 }
 
 export interface EstimateGasParams {

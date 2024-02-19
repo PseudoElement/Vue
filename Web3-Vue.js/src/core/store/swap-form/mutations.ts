@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { TokenOption } from '../../../features/swap/components/swap-form/models/swap-form-types';
 import { BlockchainName } from '../../constants/blockchain-names';
 import { SwapFormState } from './model';
@@ -20,6 +21,9 @@ export const SwapFormMutations = {
     },
     setToBlockchain(state: SwapFormState, blockchain: BlockchainName): void {
         state.to = { ...state.to, blockchain };
+    },
+    setFromAmount(state: SwapFormState, amount: BigNumber): void {
+        state.from.amount = amount;
     }
 };
 

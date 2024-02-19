@@ -1,10 +1,15 @@
 import { TokenOption } from '@/src/features/swap/components/swap-form/models/swap-form-types';
 import { BlockchainName } from '../constants/blockchain-names';
 import { Injector } from './injector/injector';
+import BigNumber from 'bignumber.js';
 
 export class SwapFormService {
     public static setFromToken(token: TokenOption): void {
         Injector.storeCommit('setFromToken', token);
+    }
+
+    public static setFromAmount(amount: BigNumber): void {
+        Injector.storeCommit('setFromAmount', amount);
     }
 
     public static setFromDecimals(): void {

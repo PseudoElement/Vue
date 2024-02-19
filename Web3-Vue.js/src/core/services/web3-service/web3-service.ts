@@ -1,27 +1,25 @@
-import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 import { ERC20_TOKEN_ABI } from '../../constants/abi/erc20-token-abi';
 import { TokenService } from '../token-service';
-import { BlockchainName } from '../../constants/blockchain-names';
-import { RPC_LIST } from '../../constants/rpc-list';
 import { AmountParser } from '../amount-parser/amount-parser';
 import { AppContractAbi } from '../swap/models/swap-types';
-import { TxObject, GetTxObjectParams, EstimateGasParams } from './models/web3-service-types';
+import { TxParams, GetTxObjectParams, EstimateGasParams } from './models/web3-service-types';
 import { GAS_CONFIG, GAS_PRICE_CONFIG } from './constants/gas-config';
 import { Injector } from '../injector/injector';
 
 export class Web3Service {
-    public static async getTxObject({ contractAddress, data, value, decimals }: GetTxObjectParams): Promise<TxObject> {
+    public static async getTxParams({ contractAddress, data, value }: GetTxObjectParams): Promise<TxParams> {
         const walletAddress = Injector.storeState.wallet.address || '';
         const gas = await this.estimateGas({ from: walletAddress, to: walletAddress, data, value });
         const gasPrice = await this.getGasPrice();
 
         return {
             data,
-            to: contractAddress,
-            ...(value && { value: AmountParser.toWei(value, decimals) }),
-            gas,
-            gasPrice
+            toAddress: contractAddress,
+            value: value,
+            gas: AmountParser.stringifyAmount(gas, 1.05),
+            gasPrice: AmountParser.stringifyAmount(gasPrice),
+            fromAddress: walletAddress
         };
     }
 
@@ -36,15 +34,22 @@ export class Web3Service {
         return data;
     }
 
+    public static async approve(contractAddress: string, tokenAddress: string): Promise<void> {
+        const walletAddress = Injector.storeState.wallet.address as string;
+        const contract = new Injector.web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
+        const approvedAmount = new BigNumber(2).pow(256).minus(1).toFixed(0);
+        const res = await contract.methods.approve(contractAddress, approvedAmount).send({ from: walletAddress });
+        console.log('Approve_res', res);
+    }
+
     public static async estimateGas({ from, to, value, data }: EstimateGasParams): Promise<number> {
-        const web3 = new Web3();
         const params = {
             from,
             to,
             value: AmountParser.stringifyAmount(value || 0),
             ...(data && { data })
         };
-        const gas = await web3.eth.estimateGas(params, undefined, GAS_CONFIG);
+        const gas = await Injector.web3.eth.estimateGas(params, undefined, GAS_CONFIG);
 
         return gas;
     }
@@ -53,19 +58,19 @@ export class Web3Service {
      * Calculates the average price per unit of gas according to web3.
      * @returns Average gas price in wei.
      */
-    public static getGasPrice(): Promise<string> {
+    public static getGasPrice(): Promise<number> {
         return Injector.web3.eth.getGasPrice(GAS_PRICE_CONFIG);
     }
 
-    public static async getBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
+    public static async getBalance(walletAddress: string, tokenAddress: string): Promise<BigNumber> {
         const balance = TokenService.isNative(tokenAddress)
             ? await this._getNativeBalance(walletAddress)
-            : await this._getNotNativeBalance(walletAddress, tokenAddress, blockchain);
+            : await this._getNotNativeBalance(walletAddress, tokenAddress);
 
         return balance;
     }
 
-    public static async getDecimals(blockchain: BlockchainName, tokenAddress: string): Promise<number> {
+    public static async getDecimals(tokenAddress: string): Promise<number> {
         const web3 = Injector.web3;
         const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
         const decimals = (await contract.methods.decimals().call()) as number;
@@ -80,13 +85,13 @@ export class Web3Service {
         return new BigNumber(amount);
     }
 
-    private static async _getNotNativeBalance(walletAddress: string, tokenAddress: string, blockchain: BlockchainName): Promise<BigNumber> {
+    private static async _getNotNativeBalance(walletAddress: string, tokenAddress: string): Promise<BigNumber> {
         try {
             const web3 = Injector.web3;
             const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
             const [weiAmount, decimals] = (await Promise.all([
                 contract.methods.balanceOf(walletAddress).call(),
-                this.getDecimals(blockchain, tokenAddress)
+                this.getDecimals(tokenAddress)
             ])) as [string, number];
             const amount = AmountParser.fromWei(weiAmount, decimals);
 

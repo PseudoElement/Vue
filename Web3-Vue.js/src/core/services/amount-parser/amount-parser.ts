@@ -8,7 +8,7 @@ export class AmountParser {
      * @param roundingMode BigNumberRoundingMode.
      */
     public static toWei(amount: BigNumber | string | number, decimals = 18, roundingMode?: BigNumber.RoundingMode): string {
-        return new BigNumber(amount || 0).times(new BigNumber(10).pow(decimals)).toFixed(0, roundingMode);
+        return new BigNumber(amount || 0).multipliedBy(new BigNumber(10).pow(decimals)).toFixed(0, roundingMode);
     }
 
     /**
