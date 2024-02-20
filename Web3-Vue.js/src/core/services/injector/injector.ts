@@ -7,6 +7,11 @@ export class Injector {
         return appState();
     }
 
+    //@TODO Handle null wallet address
+    public static get walletAddress(): string {
+        return this.storeState.wallet.address as string;
+    }
+
     public static get web3(): Web3 {
         return this.storeState.appWeb3.web3 || new Web3();
     }

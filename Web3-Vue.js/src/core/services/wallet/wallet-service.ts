@@ -52,7 +52,6 @@ export class WalletService {
 
             const blockchainName = Utils.getChainNameById(new BigNumber(chainId).toNumber());
             Injector.storeCommit('changeWeb3Provider', RPC_LIST[blockchainName]);
-            setTimeout(() => console.log(Injector.web3.currentProvider), 1000);
         });
     }
 }

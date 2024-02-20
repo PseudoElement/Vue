@@ -9,7 +9,7 @@ import { Injector } from '../injector/injector';
 
 export class Web3Service {
     public static async getTxParams({ contractAddress, data, value }: GetTxObjectParams): Promise<TxParams> {
-        const walletAddress = Injector.storeState.wallet.address || '';
+        const walletAddress = Injector.walletAddress || '';
         const gas = await this.estimateGas({ from: walletAddress, to: walletAddress, data, value });
         const gasPrice = await this.getGasPrice();
 
@@ -35,11 +35,20 @@ export class Web3Service {
     }
 
     public static async approve(contractAddress: string, tokenAddress: string): Promise<void> {
-        const walletAddress = Injector.storeState.wallet.address as string;
-        const contract = new Injector.web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
-        const approvedAmount = new BigNumber(2).pow(256).minus(1).toFixed(0);
-        const res = await contract.methods.approve(contractAddress, approvedAmount).send({ from: walletAddress });
-        console.log('Approve_res', res);
+        try {
+            const walletAddress = Injector.walletAddress;
+            const contract = new Injector.web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
+            const approvedAmount = 1_000_000;
+            // const gasLimit = await contract.methods.approve(contractAddress, approvedAmount).estimateGas({ from: walletAddress });
+            const gasPrice = await this.getGasPrice();
+
+            const res = await contract.methods
+                .approve(contractAddress, approvedAmount)
+                .send({ from: walletAddress, gas: '150000', gasPrice: AmountParser.stringifyAmount(gasPrice) });
+            console.log('Approve_res', res);
+        } catch (err) {
+            console.error('[APPROVE] Error: ', err);
+        }
     }
 
     public static async estimateGas({ from, to, value, data }: EstimateGasParams): Promise<number> {

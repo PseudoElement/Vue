@@ -108,7 +108,7 @@ const onChangeFromBlockchain = async (blockchain: BlockchainName): Promise<void>
 const receiveFromTokenBalance = async (): Promise<void> => {
     try {
         isBalanceLoading.value = true;
-        const balance = await Web3Service.getBalance(walletAddress.value!, fromAddress.value!, fromBlockchain.value!);
+        const balance = await Web3Service.getBalance(walletAddress.value!, fromAddress.value!);
         setSelectedTokenBalance(balance);
     } finally {
         isBalanceLoading.value = false;
