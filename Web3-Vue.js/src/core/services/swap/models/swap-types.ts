@@ -10,17 +10,13 @@ export interface SendTxParams {
     data: string;
 }
 
-export interface SendContractParams {
+export interface ContractParams {
     abi: AppContractAbi;
     methodName: string;
-    methodArgs: string[];
-    fromAddress: string;
-    toAddress: string;
+    methodArgs: (string | number | string[])[];
     value: string;
     contractAddress: string;
-    data?: string;
-    gas?: string;
-    gasPrice?: string;
+    data: string;
+    // gas?: string;
+    // gasPrice?: string;
 }
-
-export type CallContractParams = SendContractParams;

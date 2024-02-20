@@ -3,7 +3,7 @@ import { UNISWAP_V2_CONTRACT_ADDRESS } from './models/uniswap-v2-contract-addres
 import { Web3Service } from '../../services/web3-service/web3-service';
 import { UNISWAP_V2_ABI } from './constants/uniswap-v2-abi';
 import { AmountParser } from '../../services/amount-parser/amount-parser';
-import { AppContractAbi } from '../../services/swap/models/swap-types';
+import { AppContractAbi, ContractParams } from '../../services/swap/models/swap-types';
 import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
 import { AbstractDexTrade } from '../abstract/abstract-dex-trade';
 import { DEXES } from '../models/dexes-list';
@@ -87,11 +87,35 @@ export class UniswapV2Trade extends AbstractDexTrade {
     }
 
     public async swap(): Promise<TxHash> {
-        await Web3Service.approve(this.contractAddress, this.from.address);
-        const txParams = await this.getTransactionParams();
-        const txHash = await SwapService.sendTransaction(txParams);
+        // await Web3Service.approve(this.contractAddress, this.from.address);
+        // const txParams = await this.getTransactionParams();
+        // console.log(txParams);
+        // const txHash = await SwapService.sendTransaction(txParams);
+        const params = this.getContractParams();
+        console.log(params);
+        const txHash = await SwapService.sendContractMethod(params);
 
         return txHash;
+    }
+
+    private getContractParams(): ContractParams {
+        console.log(this.from.amount, this.from.decimals);
+        const value = AmountParser.toWei(this.from.amount, this.from.decimals);
+        const amountOutMinWei = '0';
+        const path = [this.from.address, this.to.address];
+        const deadline = this.getTxDeadline();
+        const methodArguments = ['3000000', amountOutMinWei, path, this.walletAddress, deadline];
+        const methodName = 'swapExactTokensForTokens';
+        const data = Web3Service.encodeTxData(this.contractAbi, methodName, methodArguments);
+
+        return {
+            abi: this.contractAbi,
+            contractAddress: this.contractAddress,
+            methodArgs: methodArguments,
+            methodName,
+            data,
+            value: '3000000'
+        };
     }
 
     private async getTransactionParams(): Promise<TxParams> {

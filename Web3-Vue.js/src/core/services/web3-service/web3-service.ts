@@ -38,16 +38,17 @@ export class Web3Service {
         try {
             const walletAddress = Injector.walletAddress;
             const contract = new Injector.web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
-            const approvedAmount = 1_000_000;
-            // const gasLimit = await contract.methods.approve(contractAddress, approvedAmount).estimateGas({ from: walletAddress });
+            const approvedAmount = '1000000';
             const gasPrice = await this.getGasPrice();
 
-            const res = await contract.methods
-                .approve(contractAddress, approvedAmount)
-                .send({ from: walletAddress, gas: '150000', gasPrice: AmountParser.stringifyAmount(gasPrice) });
+            const res = await contract.methods.approve(contractAddress, approvedAmount).send({
+                from: walletAddress,
+                gas: '800000',
+                gasPrice: AmountParser.stringifyAmount(gasPrice)
+            });
             console.log('Approve_res', res);
         } catch (err) {
-            console.error('[APPROVE] Error: ', err);
+            throw new Error('[APPROVE] Error: ' + err);
         }
     }
 
