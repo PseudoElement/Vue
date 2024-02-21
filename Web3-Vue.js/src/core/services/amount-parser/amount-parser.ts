@@ -25,7 +25,11 @@ export class AmountParser {
      * @param amount Value to convert.
      * @param multiplier Amount multiplier.
      */
-    public static stringifyAmount(amount: number | string | BigNumber, multiplier = 1): string {
+    public static stringifyAmount(amount: number | string | BigNumber | bigint, multiplier = 1): string {
+        if (typeof amount === 'bigint') {
+            return amount.toString();
+        }
+
         const bnAmount = new BigNumber(amount);
         if (!bnAmount.isInteger()) {
             throw new Error(`Value ${amount} is not integer`);

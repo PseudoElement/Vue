@@ -6,11 +6,12 @@ import { AppContractAbi } from '../swap/models/swap-types';
 import { TxParams, GetTxObjectParams, EstimateGasParams } from './models/web3-service-types';
 import { GAS_CONFIG, GAS_PRICE_CONFIG } from './constants/gas-config';
 import { Injector } from '../injector/injector';
+import Web3 from 'web3';
 
 export class Web3Service {
     public static async getTxParams({ contractAddress, data, value }: GetTxObjectParams): Promise<TxParams> {
         const walletAddress = Injector.walletAddress || '';
-        const gas = await this.estimateGas({ from: walletAddress, to: walletAddress, data, value });
+        const gas = await this.estimateEthGas({ from: walletAddress, to: walletAddress, data, value });
         const gasPrice = await this.getGasPrice();
 
         return {
@@ -36,14 +37,16 @@ export class Web3Service {
 
     public static async approve(contractAddress: string, tokenAddress: string): Promise<void> {
         try {
+            const web3 = new Web3(window.ethereum);
             const walletAddress = Injector.walletAddress;
-            const contract = new Injector.web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
-            const approvedAmount = '1000000';
+            const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
+            const approvedAmount = new BigNumber(2).pow(256).minus(1).toFixed(0);
+            const gas = await contract.methods.approve(contractAddress, approvedAmount).estimateGas({ from: walletAddress }, undefined);
             const gasPrice = await this.getGasPrice();
 
             const res = await contract.methods.approve(contractAddress, approvedAmount).send({
                 from: walletAddress,
-                gas: '800000',
+                gas: AmountParser.stringifyAmount(gas),
                 gasPrice: AmountParser.stringifyAmount(gasPrice)
             });
             console.log('Approve_res', res);
@@ -52,14 +55,15 @@ export class Web3Service {
         }
     }
 
-    public static async estimateGas({ from, to, value, data }: EstimateGasParams): Promise<number> {
+    public static async estimateEthGas({ from, to, value, data }: EstimateGasParams): Promise<number> {
+        const web3 = new Web3(window.ethereum);
         const params = {
             from,
             to,
             value: AmountParser.stringifyAmount(value || 0),
             ...(data && { data })
         };
-        const gas = await Injector.web3.eth.estimateGas(params, undefined, GAS_CONFIG);
+        const gas = await web3.eth.estimateGas(params, undefined, GAS_CONFIG);
 
         return gas;
     }

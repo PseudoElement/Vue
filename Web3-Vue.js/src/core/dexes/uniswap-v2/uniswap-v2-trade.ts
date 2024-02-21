@@ -87,24 +87,23 @@ export class UniswapV2Trade extends AbstractDexTrade {
     }
 
     public async swap(): Promise<TxHash> {
-        // await Web3Service.approve(this.contractAddress, this.from.address);
+        await Web3Service.approve(this.contractAddress, this.from.address);
         // const txParams = await this.getTransactionParams();
         // console.log(txParams);
         // const txHash = await SwapService.sendTransaction(txParams);
         const params = this.getContractParams();
         console.log(params);
-        const txHash = await SwapService.sendContractMethod(params);
+        const txHash = await SwapService.callContractMethod(params);
 
-        return txHash;
+        return 'Hash';
     }
 
     private getContractParams(): ContractParams {
-        console.log(this.from.amount, this.from.decimals);
         const value = AmountParser.toWei(this.from.amount, this.from.decimals);
         const amountOutMinWei = '0';
         const path = [this.from.address, this.to.address];
         const deadline = this.getTxDeadline();
-        const methodArguments = ['3000000', amountOutMinWei, path, this.walletAddress, deadline];
+        const methodArguments = [value, amountOutMinWei, path, this.walletAddress, deadline];
         const methodName = 'swapExactTokensForTokens';
         const data = Web3Service.encodeTxData(this.contractAbi, methodName, methodArguments);
 
@@ -114,7 +113,7 @@ export class UniswapV2Trade extends AbstractDexTrade {
             methodArgs: methodArguments,
             methodName,
             data,
-            value: '3000000'
+            value: '0'
         };
     }
 

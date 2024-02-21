@@ -1,4 +1,3 @@
-import { Web3Error } from 'web3';
 import { ContractParams } from './models/swap-types';
 import { TxHash } from '../../dexes/models/trade-common-types';
 import { Injector } from '../injector/injector';
@@ -23,15 +22,16 @@ export class SwapService {
     }
 
     public static async sendContractMethod(p: ContractParams): Promise<string> {
-        // const gas = await Web3Service.estimateGas({ from: Injector.walletAddress, to: p.contractAddress, data: p.data, value: p.value });
+        const gas = await Web3Service.estimateEthGas({ from: Injector.walletAddress, to: p.contractAddress, data: p.data, value: p.value });
         const gasPrice = await Web3Service.getGasPrice();
+
         const contract = new Injector.web3.eth.Contract(p.abi, p?.contractAddress);
         const res = await contract.methods[p.methodName](...p.methodArgs)
             .send({
                 from: Injector.walletAddress,
                 value: p.value,
                 ...(p.data && { data: p.data }),
-                gas: '800000',
+                gas: AmountParser.stringifyAmount(gas),
                 gasPrice: AmountParser.stringifyAmount(gasPrice)
             })
             .on('error', (err) => this._onError(err));
@@ -40,19 +40,30 @@ export class SwapService {
     }
 
     public static async callContractMethod(p: ContractParams): Promise<void> {
-        const contract = new Injector.web3.eth.Contract(p.abi, p.contractAddress);
-        const res = await contract.methods[p.methodName](...p.methodArgs).call({
-            from: Injector.walletAddress,
-            value: p.value,
-            ...(p.data && { data: p.data })
-            // ...(p.gas && { gas: p.gas }),
-            // ...(p.gasPrice && { gasPrice: p.gasPrice })
-        });
+        try {
+            const gas = await Web3Service.estimateEthGas({
+                from: Injector.walletAddress,
+                to: p.contractAddress,
+                data: p.data,
+                value: p.value
+            });
+            const gasPrice = await Web3Service.getGasPrice();
+            const contract = new Injector.web3.eth.Contract(p.abi, p.contractAddress);
+            const res = await contract.methods[p.methodName](...p.methodArgs).call({
+                from: Injector.walletAddress,
+                value: p.value,
+                ...(p.data && { data: p.data }),
+                gas: AmountParser.stringifyAmount(gas),
+                gasPrice: AmountParser.stringifyAmount(gasPrice)
+            });
 
-        console.log('[CALL_CONTRACT]', res);
+            console.log('CALL_RES', res);
+        } catch (err) {
+            this._onError(err);
+        }
     }
 
-    private static _onError(err: Web3Error): void {
+    private static _onError(err: unknown): void {
         throw new Error(`Error occured sending transaction -${err}!`);
     }
 }
