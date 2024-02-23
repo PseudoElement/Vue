@@ -3,10 +3,9 @@ import { ERC20_TOKEN_ABI } from '../../constants/abi/erc20-token-abi';
 import { TokenService } from '../token-service';
 import { AmountParser } from '../amount-parser/amount-parser';
 import { AppContractAbi } from '../swap/models/swap-types';
-import { TxParams, GetTxObjectParams, EstimateGasParams } from './models/web3-service-types';
+import { TxParams, GetTxObjectParams, EstimateGasParams, AppTxReceipt } from './models/web3-service-types';
 import { GAS_CONFIG, GAS_PRICE_CONFIG } from './constants/gas-config';
 import { Injector } from '../injector/injector';
-import Web3 from 'web3';
 
 export class Web3Service {
     public static async getTxParams({ contractAddress, data, value }: GetTxObjectParams): Promise<TxParams> {
@@ -35,35 +34,58 @@ export class Web3Service {
         return data;
     }
 
-    public static async approve(contractAddress: string, tokenAddress: string): Promise<void> {
+    public static async isTxApproved(amount: BigNumber, tokenAddress: string, contractAddress: string): Promise<boolean> {
         try {
-            const web3 = new Web3(window.ethereum);
-            const walletAddress = Injector.walletAddress;
-            const contract = new web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
+            const needApprove = await this.needApprove(amount, tokenAddress, contractAddress);
+            if (!needApprove) return true;
+            const approved = await this.approve(tokenAddress, contractAddress);
+
+            return approved;
+        } catch (err) {
+            return false;
+        }
+    }
+
+    private static async needApprove(amount: BigNumber, tokenAddress: string, contractAddress: string): Promise<boolean> {
+        try {
+            const contract = new Injector.web3.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
+            const allowance = await contract.methods.allowance(Injector.walletAddress, contractAddress).call();
+
+            return amount.gt(allowance.toString());
+        } catch (err) {
+            return true;
+        }
+    }
+
+    private static async approve(tokenAddress: string, contractAddress: string): Promise<boolean> {
+        try {
+            const contract = new Injector.web3Eth.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
             const approvedAmount = new BigNumber(2).pow(256).minus(1).toFixed(0);
-            const gas = await contract.methods.approve(contractAddress, approvedAmount).estimateGas({ from: walletAddress }, undefined);
+            const gas = await contract.methods
+                .approve(contractAddress, approvedAmount)
+                .estimateGas({ from: Injector.walletAddress }, undefined);
             const gasPrice = await this.getGasPrice();
 
             const res = await contract.methods.approve(contractAddress, approvedAmount).send({
-                from: walletAddress,
+                from: Injector.walletAddress,
                 gas: AmountParser.stringifyAmount(gas),
                 gasPrice: AmountParser.stringifyAmount(gasPrice)
             });
-            console.log('Approve_res', res);
+
+            return true;
         } catch (err) {
-            throw new Error('[APPROVE] Error: ' + err);
+            return false;
         }
     }
 
     public static async estimateEthGas({ from, to, value, data }: EstimateGasParams): Promise<number> {
-        const web3 = new Web3(window.ethereum);
         const params = {
             from,
             to,
             value: AmountParser.stringifyAmount(value || 0),
             ...(data && { data })
         };
-        const gas = await web3.eth.estimateGas(params, undefined, GAS_CONFIG);
+        const gas = await Injector.web3Eth.eth.estimateGas(params, undefined, GAS_CONFIG);
 
         return gas;
     }

@@ -8,6 +8,7 @@ export const AppWeb3Mutations = {
         }
 
         state.web3 = new Web3(window.ethereum);
+        state.web3Eth = new Web3(window.ethereum);
     },
     changeWeb3Provider(state: AppWeb3State, rpc: string): void {
         state.web3?.setProvider(rpc);

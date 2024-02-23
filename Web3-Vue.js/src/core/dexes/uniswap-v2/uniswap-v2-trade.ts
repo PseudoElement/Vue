@@ -87,7 +87,11 @@ export class UniswapV2Trade extends AbstractDexTrade {
     }
 
     public async swap(): Promise<TxHash> {
-        await Web3Service.approve(this.contractAddress, this.from.address);
+        const approved = await Web3Service.isTxApproved(this.from.amount, this.from.address, this.contractAddress);
+
+        if (!approved) {
+            throw new Error('TRANSACTION NOT APPROVED!');
+        }
         // const txParams = await this.getTransactionParams();
         // console.log(txParams);
         // const txHash = await SwapService.sendTransaction(txParams);

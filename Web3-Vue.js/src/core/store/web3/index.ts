@@ -5,7 +5,8 @@ import { AppWeb3Mutations } from './mutations';
 
 export const AppWeb3Module = {
     state: (): AppWeb3State => ({
-        web3: null
+        web3: null,
+        web3Eth: null 
     }),
     mutations: AppWeb3Mutations,
     actions: AppWeb3Actions,

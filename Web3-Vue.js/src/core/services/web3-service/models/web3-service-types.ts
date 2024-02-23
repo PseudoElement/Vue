@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { Bytes, Log, Numbers, TransactionReceiptBase } from 'web3';
 
 export interface TxParams {
     /* wallet address */
@@ -26,3 +27,5 @@ export interface EstimateGasParams {
     value?: string | BigNumber;
     data?: string;
 }
+
+export type AppTxReceipt = TransactionReceiptBase<Numbers, string, Bytes, Log>;

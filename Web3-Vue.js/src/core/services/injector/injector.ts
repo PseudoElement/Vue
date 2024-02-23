@@ -16,6 +16,10 @@ export class Injector {
         return this.storeState.appWeb3.web3 || new Web3();
     }
 
+    public static get web3Eth(): Web3 {
+        return this.storeState.appWeb3.web3Eth || new Web3();
+    }
+
     public static storeDispatch<T extends StoreActionsType>(action: T, payload?: any): Promise<void> {
         return appDispatch(action, payload);
     }
