@@ -2,17 +2,12 @@ import BigNumber from 'bignumber.js';
 import { Bytes, Log, Numbers, TransactionReceiptBase } from 'web3';
 
 export interface TxParams {
-    /* wallet address */
-    fromAddress: string;
     /* contract address */
-    toAddress: string;
+    to: string;
     /* encoded contract call returned value */
     data: string;
     /* vlaue in wei */
     value?: string;
-    gas: string;
-    /* wei amount */
-    gasPrice: string;
 }
 
 export interface GetTxObjectParams {

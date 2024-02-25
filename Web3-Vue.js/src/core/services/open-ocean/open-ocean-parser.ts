@@ -5,6 +5,7 @@ import { TokenService } from '../token-service';
 export class OpenOceanParser {
     public static mapTokens(openOceanTokens: OpenOceanToken[]): TokenOption[] {
         return openOceanTokens
+            .filter((t) => t.symbol === 'ETH' || t.symbol === 'BNB' || t.symbol === 'USDC' || t.symbol === 'USDT')
             .map((token) => ({
                 text: token.name,
                 value: token.symbol,

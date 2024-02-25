@@ -32,6 +32,7 @@ const swap = async (): Promise<void> => {
         <div class="swap-container__title">SWAP CONTAINER</div>
         <div class="swap-container__body">
             <SwapForm />
+            <h1 style="text-align: center">Provider list</h1>
         </div>
         <AppButton @click="swap">Swap</AppButton>
     </div>

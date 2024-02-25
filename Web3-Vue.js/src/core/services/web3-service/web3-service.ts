@@ -3,27 +3,21 @@ import { ERC20_TOKEN_ABI } from '../../constants/abi/erc20-token-abi';
 import { TokenService } from '../token-service';
 import { AmountParser } from '../amount-parser/amount-parser';
 import { AppContractAbi } from '../swap/models/swap-types';
-import { TxParams, GetTxObjectParams, EstimateGasParams, AppTxReceipt } from './models/web3-service-types';
+import { TxParams, GetTxObjectParams, EstimateGasParams } from './models/web3-service-types';
 import { GAS_CONFIG, GAS_PRICE_CONFIG } from './constants/gas-config';
 import { Injector } from '../injector/injector';
+import { ContractMethodArguments } from '../../dexes/models/trade-common-types';
 
 export class Web3Service {
     public static async getTxParams({ contractAddress, data, value }: GetTxObjectParams): Promise<TxParams> {
-        const walletAddress = Injector.walletAddress || '';
-        const gas = await this.estimateEthGas({ from: walletAddress, to: walletAddress, data, value });
-        const gasPrice = await this.getGasPrice();
-
         return {
             data,
-            toAddress: contractAddress,
-            value: value,
-            gas: AmountParser.stringifyAmount(gas, 1.05),
-            gasPrice: AmountParser.stringifyAmount(gasPrice),
-            fromAddress: walletAddress
+            to: contractAddress,
+            value: value
         };
     }
 
-    public static encodeTxData(abi: AppContractAbi, methodName: string, methodArgs: any[]): string {
+    public static encodeTxData(abi: AppContractAbi, methodName: string, methodArgs: ContractMethodArguments): string {
         const found = abi.find((a) => a.name === methodName);
 
         if (!found) {
@@ -61,12 +55,10 @@ export class Web3Service {
         try {
             const contract = new Injector.web3Eth.eth.Contract(ERC20_TOKEN_ABI, tokenAddress);
             const approvedAmount = new BigNumber(2).pow(256).minus(1).toFixed(0);
-            const gas = await contract.methods
-                .approve(contractAddress, approvedAmount)
-                .estimateGas({ from: Injector.walletAddress }, undefined);
+            const gas = await contract.methods.approve(contractAddress, approvedAmount).estimateGas({ from: Injector.walletAddress });
             const gasPrice = await this.getGasPrice();
 
-            const res = await contract.methods.approve(contractAddress, approvedAmount).send({
+            await contract.methods.approve(contractAddress, approvedAmount).send({
                 from: Injector.walletAddress,
                 gas: AmountParser.stringifyAmount(gas),
                 gasPrice: AmountParser.stringifyAmount(gasPrice)
