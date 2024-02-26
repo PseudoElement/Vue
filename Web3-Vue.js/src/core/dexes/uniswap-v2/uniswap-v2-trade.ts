@@ -4,15 +4,15 @@ import { UNISWAP_V2_ABI } from './constants/uniswap-v2-abi';
 import { AmountParser } from '../../services/amount-parser/amount-parser';
 import { AppContractAbi, ContractParams } from '../../services/swap/models/swap-types';
 import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
-import { AbstractDexTrade } from '../abstract/abstract-dex-trade';
-import { DEXES } from '../models/dexes-list';
-import { ContractMethodArguments } from '../models/trade-common-types';
+import { AbstractOnChainTrade } from '../abstract/abstract-dex-trade';
+import { ON_CHAIN_PROVIDER } from '../models/on-chain-provider-type';
+import { ContractMethodArguments, SwapTxType } from '../models/trade-common-types';
 import { TxParams } from '../../services/web3-service/models/web3-service-types';
 import { UniswapV2SupportedChain } from './models/uniswap-v2-supported-blockchains';
 import { TokenService } from '../../services/token-service';
 
-export class UniswapV2Trade extends AbstractDexTrade {
-    public readonly type = DEXES.UNISWAP_V2;
+export class UniswapV2Trade extends AbstractOnChainTrade {
+    public readonly type = ON_CHAIN_PROVIDER.UNISWAP_V2;
 
     protected readonly from: TokenInfo;
 
@@ -24,8 +24,8 @@ export class UniswapV2Trade extends AbstractDexTrade {
         return UNISWAP_V2_CONTRACT_ADDRESS[this.from.blockchain as UniswapV2SupportedChain];
     }
 
-    constructor(from: TokenInfo, to: TokenInfoWithoutAmount) {
-        super();
+    constructor(from: TokenInfo, to: TokenInfoWithoutAmount, swapType: SwapTxType) {
+        super(swapType);
         this.from = from;
         this.to = to;
     }
@@ -57,7 +57,7 @@ export class UniswapV2Trade extends AbstractDexTrade {
         };
     }
 
-    private getMethodName(): string {
+    protected getMethodName(): string {
         if (TokenService.isNative(this.from.address)) {
             return 'swapExactETHForTokens';
         } else if (TokenService.isNative(this.to.address)) {
@@ -67,7 +67,7 @@ export class UniswapV2Trade extends AbstractDexTrade {
         }
     }
 
-    private getMethodArguments(): ContractMethodArguments {
+    protected getMethodArguments(): ContractMethodArguments {
         if (TokenService.isNative(this.from.address)) {
             return this.getNativeToTokenMethodArguments();
         } else {

@@ -3,12 +3,14 @@ import { AppContractAbi, ContractParams } from '../../services/swap/models/swap-
 import { SwapService } from '../../services/swap/swap-service';
 import { TxParams } from '../../services/web3-service/models/web3-service-types';
 import { Web3Service } from '../../services/web3-service/web3-service';
-import { DexType } from '../models/dexes-list';
+import { OnChainProviderType } from '../models/on-chain-provider-type';
 import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
-import { TxHash } from '../models/trade-common-types';
+import { ContractMethodArguments, SWAP_TX_TYPE, SwapTxType, TxHash } from '../models/trade-common-types';
 
-export abstract class AbstractDexTrade {
-    public abstract readonly type: DexType;
+export abstract class AbstractOnChainTrade {
+    public abstract readonly type: OnChainProviderType;
+
+    private readonly swapType: SwapTxType;
 
     protected abstract readonly from: TokenInfo;
 
@@ -22,6 +24,10 @@ export abstract class AbstractDexTrade {
         return Injector.storeState.wallet.address as string;
     }
 
+    constructor(swapType: SwapTxType) {
+        this.swapType = swapType;
+    }
+
     public async swap(): Promise<TxHash> {
         try {
             const approved = await Web3Service.isTxApproved(this.from.amount, this.from.address, this.contractAddress);
@@ -30,30 +36,30 @@ export abstract class AbstractDexTrade {
                 throw new Error('TRANSACTION NOT APPROVED!');
             }
 
-            const params = this.getContractParams();
-            const txHash = await SwapService.sendContractMethod(params);
+            if (this.swapType === SWAP_TX_TYPE.SWAP_VIA_CONTRACT_SEND) {
+                const txHash = await this.swapViaContractSend();
+                return txHash;
+            }
 
+            const txHash = await this.swapViaSendTransaction();
             return txHash;
         } catch (err: any) {
             throw new Error(`SWAP ERROR - ${err.message}`);
         }
     }
 
-    public async swap2(): Promise<TxHash> {
-        try {
-            const approved = await Web3Service.isTxApproved(this.from.amount, this.from.address, this.contractAddress);
+    private async swapViaContractSend(): Promise<TxHash> {
+        const params = this.getTransactionParams();
+        const txHash = await SwapService.sendTransaction(params);
 
-            if (!approved) {
-                throw new Error('TRANSACTION NOT APPROVED!');
-            }
+        return txHash;
+    }
 
-            const params = this.getTransactionParams();
-            const txHash = await SwapService.sendTransaction(params);
+    private async swapViaSendTransaction(): Promise<TxHash> {
+        const params = this.getContractParams();
+        const txHash = await SwapService.sendContractMethod(params);
 
-            return txHash;
-        } catch (err: any) {
-            throw new Error(`SWAP ERROR - ${err.message}`);
-        }
+        return txHash;
     }
 
     protected getTxDeadline(maxTimeSecs: number = 300): number {
@@ -61,6 +67,10 @@ export abstract class AbstractDexTrade {
         const deadline = currentTimestamp + maxTimeSecs;
         return deadline;
     }
+
+    protected abstract getMethodName(): string;
+
+    protected abstract getMethodArguments(): ContractMethodArguments;
 
     protected abstract getContractParams(): ContractParams;
 

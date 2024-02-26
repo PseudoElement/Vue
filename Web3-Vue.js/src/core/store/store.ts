@@ -4,6 +4,7 @@ import type { StoreActionsType, StoreMutationsType, StoreState } from './models/
 import { WalletModule } from '../store/wallet/index';
 import { AppWeb3Module } from './web3';
 import { SwapFormModule } from './swap-form';
+import { TradeModule } from './trade/trade-index';
 
 export type AppStore = VuexStore<StoreState>;
 
@@ -13,7 +14,8 @@ export const store = createStore<StoreState>({
     modules: {
         wallet: WalletModule,
         appWeb3: AppWeb3Module,
-        swapForm: SwapFormModule
+        swapForm: SwapFormModule,
+        trade: TradeModule
     }
 });
 

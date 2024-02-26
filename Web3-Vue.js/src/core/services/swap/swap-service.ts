@@ -14,9 +14,9 @@ export class SwapService {
         //     data,
         //     value
         // });
-        const gas = '3000000';
+        const gas = '300000';
 
-        const res = await Injector.web3Eth.eth
+        const res = await Injector.web3.eth
             .sendTransaction({
                 from: Injector.walletAddress,
                 to,
@@ -34,7 +34,7 @@ export class SwapService {
         Injector.web3.handleRevert = true;
         const contract = new Injector.web3Eth.eth.Contract(p.abi, p?.contractAddress);
         const gasPrice = await Web3Service.getGasPrice();
-        const gas = '200000';
+        const gas = '300000';
         // const gas = await contract.methods[p.methodName](...p.methodArgs).estimateGas({
         //     from: Injector.walletAddress,
         //     gas: '3000000',

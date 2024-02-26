@@ -6,6 +6,7 @@ import { useStore } from 'vuex';
 import { computed } from 'vue';
 import { UniswapV2Trade } from '../../core/dexes/uniswap-v2/uniswap-v2-trade';
 import { TokenInfo, TokenInfoWithoutAmount } from '@/src/core/dexes/models/token-types';
+import { SWAP_TX_TYPE } from '@/src/core/dexes/models/trade-common-types';
 
 //hooks
 const store = useStore<StoreState>();
@@ -18,7 +19,7 @@ const toToken = computed(() => store.state.swapForm.to as TokenInfoWithoutAmount
 
 //funcs
 const swap = async (): Promise<void> => {
-    const trade = new UniswapV2Trade(fromToken.value, toToken.value);
+    const trade = new UniswapV2Trade(fromToken.value, toToken.value, SWAP_TX_TYPE.SWAP_VIA_CONTRACT_SEND);
     const hash = await trade.swap();
 
     console.log('HASH - ', hash);
