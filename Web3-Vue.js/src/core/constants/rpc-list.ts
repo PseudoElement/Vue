@@ -11,5 +11,6 @@ export const RPC_LIST: Record<BlockchainName, string> = {
     [BLOCKCHAIN_NAMES.LINEA]: 'https://linea.decubate.com',
     [BLOCKCHAIN_NAMES.OPTIMISM]: 'https://rpc.tornadoeth.cash/optimism',
     [BLOCKCHAIN_NAMES.SCROLL]: 'https://1rpc.io/scroll',
+    [BLOCKCHAIN_NAMES.BASE]: 'https://base.drpc.org',
     [BLOCKCHAIN_NAMES.SEPOLIA]: 'https://eth-sepolia.g.alchemy.com/v2/demo'
 };

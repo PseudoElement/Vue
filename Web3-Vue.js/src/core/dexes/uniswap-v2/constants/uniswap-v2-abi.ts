@@ -1,4 +1,4 @@
-import { AppContractAbi } from '@/src/core/services/swap/models/swap-types';
+import { AppContractAbi } from '@/src/core/services/web3-transaction/models/web3-transaction-types';
 
 export const UNISWAP_V2_ABI: AppContractAbi = [
     {

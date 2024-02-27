@@ -3,29 +3,39 @@ import AppButton from '../../shared/button/AppButton.vue';
 import SwapForm from './components/swap-form/SwapForm.vue';
 import { StoreState } from '../../core/store/models/store-types';
 import { useStore } from 'vuex';
-import { computed } from 'vue';
-import { UniswapV2Trade } from '../../core/dexes/uniswap-v2/uniswap-v2-trade';
-import { TokenInfo, TokenInfoWithoutAmount } from '@/src/core/dexes/models/token-types';
-import { SWAP_TX_TYPE } from '@/src/core/dexes/models/trade-common-types';
+import { computed, watch } from 'vue';
+import { SwapContainerService } from './services/swap-container-service';
 
 //hooks
 const store = useStore<StoreState>();
 
+//services
+const swapContainerSrv = new SwapContainerService();
+
 //refs
 
 //computeds
-const fromToken = computed(() => store.state.swapForm.from as TokenInfo);
-const toToken = computed(() => store.state.swapForm.to as TokenInfoWithoutAmount);
+const fromToken = computed(() => store.state.swapForm.from);
+const toToken = computed(() => store.state.swapForm.to);
 
 //funcs
 const swap = async (): Promise<void> => {
-    const trade = new UniswapV2Trade(fromToken.value, toToken.value, SWAP_TX_TYPE.SWAP_VIA_CONTRACT_SEND);
-    const hash = await trade.swap();
-
-    console.log('HASH - ', hash);
+    console.log('HASH - ');
 };
 
 //watchers
+
+watch(
+    [fromToken, toToken],
+    ([fromChanged, toChanged]) => {
+        if (!swapContainerSrv.needCalculateTrades(fromChanged, toChanged)) {
+            return;
+        }
+
+        console.log('calc');
+    },
+    { deep: true }
+);
 </script>
 
 <template>

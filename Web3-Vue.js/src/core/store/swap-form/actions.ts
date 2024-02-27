@@ -9,6 +9,11 @@ export const SwapFormActions = {
         const from = ctx.state.from;
         const decimals = TokenService.isNative(from.address!) ? 18 : await Web3Service.getDecimals(from.address!);
         ctx.state.from.decimals = decimals;
+    },
+    async setToDecimals(ctx: ActionContext<SwapFormState, StoreState>) {
+        const to = ctx.state.to;
+        const decimals = TokenService.isNative(to.address!) ? 18 : await Web3Service.getDecimals(to.address!);
+        ctx.state.to.decimals = decimals;
     }
 };
 

@@ -10,6 +10,8 @@ export interface AssetType {
     amount: BigNumber;
 }
 
+export type AssetTypeWithoutAmount = Omit<AssetType, 'amount'>;
+
 export interface ChainOption extends SelectOption {
     value: BlockchainName;
 }

@@ -5,7 +5,7 @@ import InputSelect from '../../../../shared/inputs/input-select/InputSelect.vue'
 import InputText from '../../../../shared/inputs/input-text/InputText.vue';
 import AppLoader from '../../../../shared/loader/AppLoader.vue';
 
-import { AssetType, ChainOption, TokenOption } from './models/swap-form-types';
+import { AssetType, AssetTypeWithoutAmount, ChainOption, TokenOption } from './models/swap-form-types';
 import { OpenOceanApiService } from '../../../../core/services/open-ocean/open-ocean-api-service';
 import { Utils } from '../../../../core/utils/utils';
 import { OpenOceanParser } from '../../../../core/services/open-ocean/open-ocean-parser';
@@ -35,10 +35,9 @@ const selectedTokenBalance = ref<number | null>(null);
 const fromBlockchain = computed(() => store.state.swapForm.from.blockchain);
 const fromToken = computed(() => store.state.swapForm.from.symbol);
 const fromAddress = computed(() => store.state.swapForm.from.address);
-// const fromAmount = computed(() => store.state.swapForm.from.amount);
 const toBlockchain = computed(() => store.state.swapForm.to.blockchain);
 const walletAddress = computed(() => store.state.wallet.address);
-const to = computed<AssetType>(() => store.state.swapForm.to);
+const to = computed<AssetTypeWithoutAmount>(() => store.state.swapForm.to);
 const showBalance = computed<boolean>(() => !!fromToken.value && !isBalanceLoading.value);
 const showFromTokenSelect = computed<boolean>(() => !isFromTokenListLoading.value && !!fromTokenList.value.length);
 const showToTokenSelect = computed<boolean>(() => !isToTokenListLoading.value && !!toTokenList.value.length);
@@ -66,8 +65,9 @@ const removeFromToken = (): void => {
     SwapFormService.removeFromToken();
 };
 
-const setToToken = (token: SelectOption): void => {
-    SwapFormService.setToToken(token as TokenOption);
+const setToToken = async (token: SelectOption): Promise<void> => {
+    await SwapFormService.setToToken(token as TokenOption);
+    await SwapFormService.setToDecimals();
 };
 
 const setSelectedTokenBalance = (amount: BigNumber): void => {

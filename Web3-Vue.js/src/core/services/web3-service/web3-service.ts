@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { ERC20_TOKEN_ABI } from '../../constants/abi/erc20-token-abi';
 import { TokenService } from '../token-service';
 import { AmountParser } from '../amount-parser/amount-parser';
-import { AppContractAbi } from '../swap/models/swap-types';
+import { AppContractAbi } from '../web3-transaction/models/web3-transaction-types';
 import { TxParams, GetTxObjectParams, EstimateGasParams } from './models/web3-service-types';
 import { GAS_CONFIG, GAS_PRICE_CONFIG } from './constants/gas-config';
 import { Injector } from '../injector/injector';

@@ -1,20 +1,21 @@
-import { UNISWAP_V2_CONTRACT_ADDRESS } from './models/uniswap-v2-contract-address';
-import { Web3Service } from '../../services/web3-service/web3-service';
-import { UNISWAP_V2_ABI } from './constants/uniswap-v2-abi';
-import { AmountParser } from '../../services/amount-parser/amount-parser';
+import BigNumber from 'bignumber.js';
+import { BlockchainName } from '../../constants/blockchain-names';
 import { AppContractAbi, ContractParams } from '../../services/web3-transaction/models/web3-transaction-types';
-import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
+import { TxParams } from '../../services/web3-service/models/web3-service-types';
 import { AbstractOnChainTrade } from '../abstract/abstract-dex-trade';
 import { ON_CHAIN_PROVIDER } from '../models/on-chain-provider-type';
+import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
 import { ContractMethodArguments, SWAP_TX_TYPE, SwapTxType } from '../models/trade-common-types';
-import { TxParams } from '../../services/web3-service/models/web3-service-types';
-import { UNISWAP_V2_SUPPORTED_CHAINS, UniswapV2SupportedChain } from './models/uniswap-v2-supported-blockchains';
+import { PANCAKESWAP_V2_ABI } from './constants/pancakeswap-v2-abi';
+import { PANCAKESWAP_V2_CONTRACT_ADDRESS } from './models/pancakeswap-v2-contract-adress';
+import { PANCAKESWAP_V2_SUPPORTED_CHAINS, PancakeSwapV2SupportedChain } from './models/pancakeswap-v2-supported-chains';
+import { Injector } from '../../services/injector/injector';
+import { AmountParser } from '../../services/amount-parser/amount-parser';
 import { TokenService } from '../../services/token-service';
-import { BlockchainName } from '../../constants/blockchain-names';
-import BigNumber from 'bignumber.js';
+import { Web3Service } from '../../services/web3-service/web3-service';
 
-export class UniswapV2Trade extends AbstractOnChainTrade {
-    public readonly type = ON_CHAIN_PROVIDER.UNISWAP_V2;
+export class PancakeSwapV2Trade extends AbstractOnChainTrade {
+    public readonly type = ON_CHAIN_PROVIDER.PANCAKESWAP_V2;
 
     protected readonly swapType: SwapTxType = SWAP_TX_TYPE.SWAP_VIA_CONTRACT_SEND;
 
@@ -22,12 +23,12 @@ export class UniswapV2Trade extends AbstractOnChainTrade {
 
     protected readonly to: TokenInfoWithoutAmount;
 
-    protected readonly contractAbi: AppContractAbi = UNISWAP_V2_ABI;
+    protected readonly contractAbi: AppContractAbi = PANCAKESWAP_V2_ABI;
 
-    protected readonly supportedBlockchains: BlockchainName[] = UNISWAP_V2_SUPPORTED_CHAINS;
+    protected readonly supportedBlockchains: BlockchainName[] = PANCAKESWAP_V2_SUPPORTED_CHAINS;
 
     protected get contractAddress(): string {
-        return UNISWAP_V2_CONTRACT_ADDRESS[this.from.blockchain as UniswapV2SupportedChain];
+        return PANCAKESWAP_V2_CONTRACT_ADDRESS[this.from.blockchain as PancakeSwapV2SupportedChain];
     }
 
     constructor(from: TokenInfo, to: TokenInfoWithoutAmount) {
@@ -36,9 +37,15 @@ export class UniswapV2Trade extends AbstractOnChainTrade {
         this.to = to;
     }
 
-    //@TODO Find way to calc outputAmount
     protected async getOutputAmount(): Promise<BigNumber> {
-        return this.from.amount.multipliedBy(0.95);
+        const contract = new Injector.web3.eth.Contract(this.contractAbi, this.contractAddress);
+        const fromAmountWei = AmountParser.toWei(this.from.amount, this.from.decimals);
+        const path = [this.from.address, this.to.address];
+        const methodArgs = [fromAmountWei, path];
+        const [outputAmount] = (await contract.methods['getAmountsOut'](...methodArgs).call()) as number[];
+        console.log('__OUTPUT_AMOUNT', outputAmount);
+
+        return new BigNumber(outputAmount);
     }
 
     protected getTransactionParams(): TxParams {

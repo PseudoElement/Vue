@@ -16,8 +16,7 @@ export const SwapFormModule = {
             blockchain: null,
             address: null,
             symbol: null,
-            decimals: null,
-            amount: new BigNumber(0)
+            decimals: null
         }
     }),
     mutations: SwapFormMutations,

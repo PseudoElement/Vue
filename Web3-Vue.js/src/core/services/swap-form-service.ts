@@ -20,6 +20,10 @@ export class SwapFormService {
         Injector.storeCommit('setToToken', token);
     }
 
+    public static setToDecimals(): void {
+        Injector.storeDispatch('setToDecimals');
+    }
+
     public static removeFromToken(): void {
         Injector.storeCommit('setFromToken', { address: null, value: null });
     }

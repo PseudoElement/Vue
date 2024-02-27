@@ -17,7 +17,7 @@ export class Injector {
     }
 
     public static get web3Eth(): Web3 {
-        return this.storeState.appWeb3.web3Eth || new Web3();
+        return this.storeState.appWeb3.web3Eth || new Web3(window.ethereum);
     }
 
     public static storeDispatch<T extends StoreActionsType>(action: T, payload?: any): Promise<void> {

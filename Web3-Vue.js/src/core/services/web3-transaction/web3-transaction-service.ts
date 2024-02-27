@@ -1,11 +1,11 @@
-import { ContractParams } from './models/swap-types';
+import { ContractParams } from './models/web3-transaction-types';
 import { TxHash } from '../../dexes/models/trade-common-types';
 import { Injector } from '../injector/injector';
 import { AppTxReceipt, TxParams } from '../web3-service/models/web3-service-types';
 import { Web3Service } from '../web3-service/web3-service';
 import { AmountParser } from '../amount-parser/amount-parser';
 
-export class SwapService {
+export class Web3TxService {
     public static async sendTransaction({ to, value, data }: TxParams): Promise<TxHash> {
         const gasPrice = await Web3Service.getGasPrice();
         // const gas = await Injector.web3.eth.estimateGas({

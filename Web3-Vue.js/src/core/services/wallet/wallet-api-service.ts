@@ -9,6 +9,11 @@ export class WalletApiService {
         }) as void;
     }
 
+    //@TODO handle add new chain
+    public static addNewChain(hexChainId: string): void {
+        const chainId = new BigNumber(hexChainId).toNumber();
+    }
+
     public static async getChainId(): Promise<number> {
         const hexChainId = (await window.ethereum?.request({
             method: 'eth_chainId'
