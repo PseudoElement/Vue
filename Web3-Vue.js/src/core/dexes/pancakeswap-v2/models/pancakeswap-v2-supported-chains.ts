@@ -1,4 +1,4 @@
-import { BLOCKCHAIN_NAMES } from '@/src/core/constants/blockchain-names';
+import { BLOCKCHAIN_NAMES } from '../../../../core/constants/blockchain-names';
 
 export const PANCAKESWAP_V2_SUPPORTED_CHAINS = [
     BLOCKCHAIN_NAMES.ETHEREUM,

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import AppButton from '../../shared/button/AppButton.vue';
 import SwapForm from './components/swap-form/SwapForm.vue';
+import TradeList from './components/trade-list/TradeList.vue';
 import { StoreState } from '../../core/store/models/store-types';
 import { useStore } from 'vuex';
 import { computed, watch } from 'vue';
@@ -31,8 +32,6 @@ watch(
         if (!swapContainerSrv.needCalculateTrades(fromChanged, toChanged)) {
             return;
         }
-
-        console.log('calc');
     },
     { deep: true }
 );
@@ -43,9 +42,9 @@ watch(
         <div class="swap-container__title">SWAP CONTAINER</div>
         <div class="swap-container__body">
             <SwapForm />
-            <h1 style="text-align: center">Provider list</h1>
+            <AppButton @click="swap">Swap</AppButton>
         </div>
-        <AppButton @click="swap">Swap</AppButton>
+        <TradeList />
     </div>
 </template>
 
@@ -56,6 +55,14 @@ watch(
     align-items: center;
     width: 100%;
     gap: 15px;
+
+    &__body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 20px;
+    }
 
     &__title {
     }

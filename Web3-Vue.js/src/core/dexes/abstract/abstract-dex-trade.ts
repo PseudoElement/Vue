@@ -9,9 +9,16 @@ import { OnChainProviderType } from '../models/on-chain-provider-type';
 import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
 import { ContractMethodArguments, SWAP_TX_TYPE, SwapTxType, TxHash } from '../models/trade-common-types';
 import { Utils } from '../../utils/utils';
+import { AmountParser } from '../../services/amount-parser/amount-parser';
 
 export abstract class AbstractOnChainTrade {
     public outputAmount: BigNumber | null = null;
+
+    public get outputAmountNum(): number {
+        const nonWeiAmount = AmountParser.fromWei(this.outputAmount, this.to.decimals);
+        const amount = nonWeiAmount.toNumber();
+        return amount;
+    }
 
     public abstract readonly type: OnChainProviderType;
 

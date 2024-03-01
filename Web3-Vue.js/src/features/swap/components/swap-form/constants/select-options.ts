@@ -9,8 +9,7 @@ export const SELECT_SOURCE_CHAINS: ChainOption[] = [
     { text: 'Linea', value: BLOCKCHAIN_NAMES.LINEA, isDisabled: false },
     { text: 'Optimism', value: BLOCKCHAIN_NAMES.OPTIMISM, isDisabled: false },
     { text: 'Polygon', value: BLOCKCHAIN_NAMES.POLYGON, isDisabled: false },
-    { text: 'Scroll', value: BLOCKCHAIN_NAMES.SCROLL, isDisabled: false },
-    { text: 'Sepolia', value: BLOCKCHAIN_NAMES.SEPOLIA, isDisabled: false }
+    { text: 'Scroll', value: BLOCKCHAIN_NAMES.SCROLL, isDisabled: false }
 ];
 
 export const SELECT_TARGET_CHAINS: ChainOption[] = [

@@ -9,3 +9,5 @@ export const TradeMutations = {
         state.trades = trades;
     }
 };
+
+export type TradeMutationsType = keyof typeof TradeMutations;

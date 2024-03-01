@@ -16,7 +16,9 @@ export class AmountParser {
      * @param amountInWei Amount to convert.
      * @param decimals Token decimals.
      */
-    public static fromWei(amountInWei: BigNumber | string | number, decimals = 18): BigNumber {
+    public static fromWei(amountInWei: BigNumber | string | number | null, decimals = 18): BigNumber {
+        if (!amountInWei) return new BigNumber(0);
+
         return new BigNumber(amountInWei).div(new BigNumber(10).pow(decimals));
     }
 
