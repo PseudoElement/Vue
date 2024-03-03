@@ -9,19 +9,19 @@ import { ContractMethodArguments, SWAP_TX_TYPE, SwapTxType } from '../models/tra
 import { PANCAKESWAP_V2_ABI } from './constants/pancakeswap-v2-abi';
 import { PANCAKESWAP_V2_CONTRACT_ADDRESS } from './models/pancakeswap-v2-contract-adress';
 import { PANCAKESWAP_V2_SUPPORTED_CHAINS, PancakeSwapV2SupportedChain } from './models/pancakeswap-v2-supported-chains';
-import { Injector } from '../../services/injector/injector';
 import { AmountParser } from '../../services/amount-parser/amount-parser';
 import { TokenService } from '../../services/token-service';
 import { Web3Service } from '../../services/web3-service/web3-service';
+import { Web3TxService } from '../../services/web3-transaction/web3-transaction-service';
 
 export class PancakeSwapV2Trade extends AbstractOnChainTrade {
     public readonly type = ON_CHAIN_PROVIDER.PANCAKESWAP_V2;
 
-    protected readonly swapType: SwapTxType = SWAP_TX_TYPE.SWAP_VIA_CONTRACT_SEND;
+    public readonly swapType: SwapTxType = SWAP_TX_TYPE.SWAP_VIA_CONTRACT_SEND;
 
-    protected readonly from: TokenInfo;
+    public readonly from: TokenInfo;
 
-    protected readonly to: TokenInfoWithoutAmount;
+    public readonly to: TokenInfoWithoutAmount;
 
     protected readonly contractAbi: AppContractAbi = PANCAKESWAP_V2_ABI;
 
@@ -38,12 +38,16 @@ export class PancakeSwapV2Trade extends AbstractOnChainTrade {
     }
 
     protected async getOutputAmount(): Promise<BigNumber> {
-        const contract = new Injector.web3.eth.Contract(this.contractAbi, this.contractAddress);
         const fromAmountWei = AmountParser.toWei(this.from.amount, this.from.decimals);
         const path = [this.from.address, this.to.address];
         const methodArgs = [fromAmountWei, path];
-        const [outputAmount] = (await contract.methods['getAmountsOut'](...methodArgs).call()) as number[];
-        console.log('__OUTPUT_AMOUNT', outputAmount);
+
+        const [_, outputAmount] = (await Web3TxService.callContractMethod({
+            abi: this.contractAbi,
+            contractAddress: this.contractAddress,
+            methodName: 'getAmountsOut',
+            methodArgs
+        })) as number[];
 
         return new BigNumber(outputAmount);
     }

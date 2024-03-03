@@ -2,11 +2,12 @@
 import Trade from '../trade-element/Trade.vue';
 import { useStore } from 'vuex';
 import { StoreState } from '../../../../core/store/models/store-types';
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { SwapContainerService } from '../../services/swap-container-service';
 import { CalculationService } from '../../../../core/dexes/services/on-chain-calculation-service';
 import { Injector } from '../../../../core/services/injector/injector';
 import { TokenInfo, TokenInfoWithoutAmount } from '../../../../core/dexes/models/token-types';
+import BackdropLoader from '../../../../shared/backdrop-loader/BackdropLoader.vue';
 
 //hooks
 const store = useStore<StoreState>();
@@ -17,6 +18,7 @@ const calculationSrv = new CalculationService();
 const arr = [1, 2, 3];
 
 //refs
+const isCalculation = ref<boolean>(false);
 
 //computeds
 const fromToken = computed(() => store.state.swapForm.from);
@@ -26,11 +28,16 @@ const hasAvailableTrades = computed(() => trades.value.length > 0);
 
 //funcs
 const calculateTrades = async (): Promise<void> => {
-    const availableTrades = await calculationSrv.getAvailableOnChainTrades(
-        fromToken.value as TokenInfo,
-        toToken.value as TokenInfoWithoutAmount
-    );
-    Injector.storeCommit('setTrades', availableTrades);
+    try {
+        isCalculation.value = true;
+        const availableTrades = await calculationSrv.getAvailableOnChainTrades(
+            fromToken.value as TokenInfo,
+            toToken.value as TokenInfoWithoutAmount
+        );
+        Injector.storeCommit('setTrades', availableTrades);
+    } finally {
+        isCalculation.value = false;
+    }
 };
 
 //watchers
@@ -54,11 +61,13 @@ watch(
             <Trade v-if="hasAvailableTrades" v-for="trade in trades" :trade="trade" />
             <p v-else>No available trades. Try to recalculate!</p>
         </div>
+        <BackdropLoader v-show="isCalculation" :text="'Calculation...'" :border-radius="20" />
     </div>
 </template>
 
 <style lang="scss" scoped>
 .trade-list {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -68,5 +77,11 @@ watch(
     padding: 10px;
     box-shadow: 0 0 15px 3px gray;
     border-radius: 20px;
+
+    &__trades {
+        position: relative;
+        display: flex;
+        gap: 15px;
+    }
 }
 </style>

@@ -16,11 +16,11 @@ import BigNumber from 'bignumber.js';
 export class UniswapV2Trade extends AbstractOnChainTrade {
     public readonly type = ON_CHAIN_PROVIDER.UNISWAP_V2;
 
-    protected readonly swapType: SwapTxType = SWAP_TX_TYPE.SWAP_VIA_CONTRACT_SEND;
+    public readonly swapType: SwapTxType = SWAP_TX_TYPE.SWAP_VIA_CONTRACT_SEND;
 
-    protected readonly from: TokenInfo;
+    public readonly from: TokenInfo;
 
-    protected readonly to: TokenInfoWithoutAmount;
+    public readonly to: TokenInfoWithoutAmount;
 
     protected readonly contractAbi: AppContractAbi = UNISWAP_V2_ABI;
 
@@ -38,7 +38,7 @@ export class UniswapV2Trade extends AbstractOnChainTrade {
 
     //@TODO Find way to calc outputAmount
     protected async getOutputAmount(): Promise<BigNumber> {
-        return this.from.amount.multipliedBy(0.95);
+        return new BigNumber(AmountParser.toWei(this.from.amount.multipliedBy(0.95), this.from.decimals));
     }
 
     protected getTransactionParams(): TxParams {

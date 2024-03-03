@@ -12,11 +12,13 @@ export interface SendTxParams {
 
 export interface ContractParams {
     abi: AppContractAbi;
+    contractAddress: string;
     methodName: string;
     methodArgs: (string | number | string[])[];
     value: string;
-    contractAddress: string;
     data: string;
     // gas?: string;
     // gasPrice?: string;
 }
+
+export type CallContractParams = Omit<ContractParams, 'value' | 'data'>;

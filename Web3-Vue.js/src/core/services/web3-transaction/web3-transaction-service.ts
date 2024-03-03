@@ -1,4 +1,4 @@
-import { ContractParams } from './models/web3-transaction-types';
+import { CallContractParams, ContractParams } from './models/web3-transaction-types';
 import { TxHash } from '../../dexes/models/trade-common-types';
 import { Injector } from '../injector/injector';
 import { AppTxReceipt, TxParams } from '../web3-service/models/web3-service-types';
@@ -54,28 +54,16 @@ export class Web3TxService {
         return res.transactionHash as string;
     }
 
-    public static async callContractMethod(p: ContractParams): Promise<string> {
+    public static async callContractMethod(p: CallContractParams): Promise<unknown> {
         try {
-            const gas = await Web3Service.estimateEthGas({
-                from: Injector.walletAddress,
-                to: p.contractAddress,
-                data: p.data,
-                value: p.value
-            });
-            const gasPrice = await Web3Service.getGasPrice();
-            const contract = new Injector.web3Eth.eth.Contract(p.abi, p.contractAddress);
+            const contract = new Injector.web3.eth.Contract(p.abi, p.contractAddress);
             const res = (await contract.methods[p.methodName](...p.methodArgs).call({
-                from: Injector.walletAddress,
-                value: p.value,
-                ...(p.data && { data: p.data }),
-                gas: AmountParser.stringifyAmount(gas),
-                gasPrice: AmountParser.stringifyAmount(gasPrice)
+                from: Injector.walletAddress
             })) as AppTxReceipt;
 
-            return res.transactionHash;
+            return res;
         } catch (err) {
             this._onError(err);
-            return '';
         }
     }
 

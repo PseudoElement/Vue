@@ -14,19 +14,18 @@ import { AmountParser } from '../../services/amount-parser/amount-parser';
 export abstract class AbstractOnChainTrade {
     public outputAmount: BigNumber | null = null;
 
-    public get outputAmountNum(): number {
+    public get outputAmountString(): string {
         const nonWeiAmount = AmountParser.fromWei(this.outputAmount, this.to.decimals);
-        const amount = nonWeiAmount.toNumber();
-        return amount;
+        return nonWeiAmount.toFixed();
     }
 
     public abstract readonly type: OnChainProviderType;
 
-    protected abstract readonly swapType: SwapTxType;
+    public abstract readonly swapType: SwapTxType;
 
-    protected abstract readonly from: TokenInfo;
+    public abstract readonly from: TokenInfo;
 
-    protected abstract readonly to: TokenInfoWithoutAmount;
+    public abstract readonly to: TokenInfoWithoutAmount;
 
     protected abstract readonly contractAddress: string;
 
