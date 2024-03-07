@@ -2,13 +2,9 @@
 import AppButton from '../../shared/button/AppButton.vue';
 import SwapForm from './components/swap-form/SwapForm.vue';
 import TradeList from './components/trade-list/TradeList.vue';
-import { StoreState } from '../../core/store/models/store-types';
-import { useStore } from 'vuex';
-import { computed, watch } from 'vue';
 import { SwapContainerService } from './services/swap-container-service';
 
 //hooks
-const store = useStore<StoreState>();
 
 //services
 const swapContainerSrv = new SwapContainerService();
@@ -16,25 +12,14 @@ const swapContainerSrv = new SwapContainerService();
 //refs
 
 //computeds
-const fromToken = computed(() => store.state.swapForm.from);
-const toToken = computed(() => store.state.swapForm.to);
 
 //funcs
 const swap = async (): Promise<void> => {
-    console.log('HASH - ');
+    const hash = await swapContainerSrv.swap();
+    console.log('HASH - ', hash);
 };
 
 //watchers
-
-watch(
-    [fromToken, toToken],
-    ([fromChanged, toChanged]) => {
-        if (!swapContainerSrv.needCalculateTrades(fromChanged, toChanged)) {
-            return;
-        }
-    },
-    { deep: true }
-);
 </script>
 
 <template>

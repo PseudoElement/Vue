@@ -74,15 +74,15 @@ export abstract class AbstractOnChainTrade {
     }
 
     private async swapViaContractSend(): Promise<TxHash> {
-        const params = this.getTransactionParams();
-        const txHash = await Web3TxService.sendTransaction(params);
+        const params = this.getContractParams();
+        const txHash = await Web3TxService.sendContractMethod(params);
 
         return txHash;
     }
 
     private async swapViaSendTransaction(): Promise<TxHash> {
-        const params = this.getContractParams();
-        const txHash = await Web3TxService.sendContractMethod(params);
+        const params = this.getTransactionParams();
+        const txHash = await Web3TxService.sendTransaction(params);
 
         return txHash;
     }

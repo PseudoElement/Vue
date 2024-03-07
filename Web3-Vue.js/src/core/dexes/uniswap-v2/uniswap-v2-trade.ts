@@ -12,6 +12,7 @@ import { UNISWAP_V2_SUPPORTED_CHAINS, UniswapV2SupportedChain } from './models/u
 import { TokenService } from '../../services/token-service';
 import { BlockchainName } from '../../constants/blockchain-names';
 import BigNumber from 'bignumber.js';
+import { Web3TxService } from '../../services/web3-transaction/web3-transaction-service';
 
 export class UniswapV2Trade extends AbstractOnChainTrade {
     public readonly type = ON_CHAIN_PROVIDER.UNISWAP_V2;
@@ -36,9 +37,19 @@ export class UniswapV2Trade extends AbstractOnChainTrade {
         this.to = to;
     }
 
-    //@TODO Find way to calc outputAmount
     protected async getOutputAmount(): Promise<BigNumber> {
-        return new BigNumber(AmountParser.toWei(this.from.amount.multipliedBy(0.95), this.from.decimals));
+        const fromAmountWei = AmountParser.toWei(this.from.amount, this.from.decimals);
+        const path = [this.from.address, this.to.address];
+        const methodArgs = [fromAmountWei, path];
+
+        const [_, outputAmount] = (await Web3TxService.callContractMethod({
+            abi: this.contractAbi,
+            contractAddress: this.contractAddress,
+            methodName: 'getAmountsOut',
+            methodArgs
+        })) as number[];
+
+        return new BigNumber(outputAmount);
     }
 
     protected getTransactionParams(): TxParams {

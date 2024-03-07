@@ -16,7 +16,10 @@ export interface ContractParams {
     methodName: string;
     methodArgs: (string | number | string[])[];
     value: string;
-    data: string;
+    /* optional cause you get data using encodeABI() or encodeFunctionCall().
+       It's the same to contract.methods[methodName](...args)
+    */
+    data?: string;
     // gas?: string;
     // gasPrice?: string;
 }

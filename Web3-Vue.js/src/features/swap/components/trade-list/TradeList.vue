@@ -2,7 +2,7 @@
 import Trade from '../trade-element/Trade.vue';
 import { useStore } from 'vuex';
 import { StoreState } from '../../../../core/store/models/store-types';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 import { SwapContainerService } from '../../services/swap-container-service';
 import { CalculationService } from '../../../../core/dexes/services/on-chain-calculation-service';
 import { Injector } from '../../../../core/services/injector/injector';
@@ -15,7 +15,6 @@ const store = useStore<StoreState>();
 //services
 const swapContainerSrv = new SwapContainerService();
 const calculationSrv = new CalculationService();
-const arr = [1, 2, 3];
 
 //refs
 const isCalculation = ref<boolean>(false);
@@ -34,6 +33,9 @@ const calculateTrades = async (): Promise<void> => {
             fromToken.value as TokenInfo,
             toToken.value as TokenInfoWithoutAmount
         );
+
+        Injector.storeCommit('setTrades', []);
+        await nextTick();
         Injector.storeCommit('setTrades', availableTrades);
     } finally {
         isCalculation.value = false;
@@ -58,7 +60,9 @@ watch(
     <div class="trade-list">
         <h1 style="text-align: center">Provider list</h1>
         <div class="trade-list__trades">
-            <Trade v-if="hasAvailableTrades" v-for="trade in trades" :trade="trade" />
+            <template v-if="hasAvailableTrades">
+                <Trade v-for="(trade, ind) in trades" :trade="trade" :key="ind" />
+            </template>
             <p v-else>No available trades. Try to recalculate!</p>
         </div>
         <BackdropLoader v-show="isCalculation" :text="'Calculation...'" :border-radius="20" />
@@ -85,3 +89,4 @@ watch(
     }
 }
 </style>
+nextTick,

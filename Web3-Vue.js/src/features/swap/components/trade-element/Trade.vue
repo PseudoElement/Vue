@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { AbstractOnChainTrade } from '@/src/core/dexes/abstract/abstract-dex-trade';
 import { TRADES_UI_CONFIG } from '../../../../core/constants/trades/trades-ui-config';
-import { computed } from 'vue';
+import { computed, onUpdated } from 'vue';
 import { useStore } from 'vuex';
 import { StoreState } from '../../../../core/store/models/store-types';
 import { Injector } from '../../../../core/services/injector/injector';
@@ -31,7 +31,8 @@ const selectTrade = (): void => {
     Injector.storeCommit('selectTrade', trade);
 };
 
-//
+//lifehooks
+onUpdated(() => {});
 </script>
 
 <template>
@@ -101,3 +102,4 @@ const selectTrade = (): void => {
     }
 }
 </style>
+, onUpdated, onUpdated

@@ -5,6 +5,9 @@ export const TradeMutations = {
     selectTrade(state: TradeState, trade: AbstractOnChainTrade) {
         state.selectedTrade = trade;
     },
+    clearSelectedTrade(state: TradeState) {
+        state.selectedTrade = null;
+    },
     setTrades(state: TradeState, trades: AbstractOnChainTrade[]) {
         state.trades = trades;
     }

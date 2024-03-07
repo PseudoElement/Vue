@@ -4,7 +4,6 @@ import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
 
 export class CalculationService {
     public async getAvailableOnChainTrades(from: TokenInfo, to: TokenInfoWithoutAmount): Promise<AbstractOnChainTrade[]> {
-        console.log({ from, to });
         const promises = ON_CHAIN_PROVIDERS.map((ProviderClass) => new ProviderClass(from, to)).map((provider) => provider.calculate());
         const trades = await Promise.allSettled(promises);
         const availableTrades = trades
