@@ -48,7 +48,6 @@ export class PancakeSwapV2Trade extends AbstractOnChainTrade {
             methodName: 'getAmountsOut',
             methodArgs
         })) as number[];
-        console.log({ fromAmountWei, outputAmount });
 
         return new BigNumber(outputAmount);
     }
