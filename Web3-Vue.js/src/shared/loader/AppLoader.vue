@@ -2,7 +2,7 @@
 const { size } = defineProps<{ size?: number }>();
 
 //styles
-const styles = { fontSize: !!size ? `${size}px` : '30px', width: !!size ? `${size}px` : '30px' };
+const styles = { fontSize: size ? `${size}px` : '30px', width: size ? `${size}px` : '30px' };
 </script>
 
 <template>

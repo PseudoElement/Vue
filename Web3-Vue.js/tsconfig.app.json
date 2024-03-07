@@ -1,10 +1,9 @@
 {
     "extends": "@vue/tsconfig/tsconfig.dom.json",
-    "include": ["env.d.ts", "src/**/*.vue", "src/**/*.ts"],
+    "include": ["env.d.ts", "src/**/*.vue", "src/**/*.ts", "src/**/*.d.ts"],
     "exclude": ["src/**/__tests__/*"],
     "compilerOptions": {
         "composite": true,
-        "noEmit": true,
         "baseUrl": ".",
         "paths": {
             "@/*": ["./*"]
@@ -14,6 +13,11 @@
         "module": "esnext",
         "moduleResolution": "node",
         "target": "esnext",
-        "verbatimModuleSyntax": false
+        "verbatimModuleSyntax": false,
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "preserve"
     }
 }

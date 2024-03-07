@@ -15,6 +15,11 @@
         "moduleResolution": "node",
         "target": "esnext",
         "verbatimModuleSyntax": false,
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "preserve",
         "paths": {
             "@/*": ["./*"]
         }

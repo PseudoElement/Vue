@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import { SELECT_SOURCE_CHAINS, SELECT_TARGET_CHAINS } from './constants/select-options';
 import InputSelect from '../../../../shared/inputs/input-select/InputSelect.vue';
