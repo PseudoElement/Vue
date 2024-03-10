@@ -11,7 +11,7 @@ export class Web3TxService {
             const gasPrice = await Web3Service.getGasPrice();
             const gas = '700000';
 
-            const res = await Injector.web3.eth.sendTransaction({
+            const res = await Injector.web3Eth.eth.sendTransaction({
                 from: Injector.walletAddress,
                 to,
                 value,

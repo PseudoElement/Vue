@@ -1,6 +1,7 @@
 import { StoreActionsType, StoreMutationsType, StoreState } from '../../store/models/store-types';
 import Web3 from 'web3';
 import { appCommit, appDispatch, appState } from '../../store/store';
+import { HttpService } from '../http/http-service';
 
 export class Injector {
     public static get storeState(): StoreState {
@@ -18,6 +19,10 @@ export class Injector {
 
     public static get web3Eth(): Web3 {
         return this.storeState.appWeb3.web3Eth || new Web3(window.ethereum);
+    }
+
+    public static get http(): HttpService {
+        return new HttpService();
     }
 
     public static storeDispatch<T extends StoreActionsType>(action: T, payload?: any): Promise<void> {

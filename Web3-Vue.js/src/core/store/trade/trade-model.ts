@@ -1,4 +1,4 @@
-import { AbstractOnChainTrade } from '../../dexes/abstract/abstract-dex-trade';
+import { AbstractOnChainTrade } from '../../dexes/abstract/abstract-on-chain-trade';
 import { ResolvedTrade } from '../../dexes/services/models/calculation-service-types';
 
 export interface TradeState {

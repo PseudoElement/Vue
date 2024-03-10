@@ -1,0 +1,13 @@
+import { BLOCKCHAIN_NAMES } from '../../../../../core/constants/blockchain-names';
+
+export const ONE_INCH_SUPPORTED_BLOCKCHAINS = [
+    BLOCKCHAIN_NAMES.ETHEREUM,
+    BLOCKCHAIN_NAMES.BNB,
+    BLOCKCHAIN_NAMES.ARBITRUM,
+    BLOCKCHAIN_NAMES.AVALANCHE,
+    BLOCKCHAIN_NAMES.OPTIMISM,
+    BLOCKCHAIN_NAMES.POLYGON,
+    BLOCKCHAIN_NAMES.BASE
+];
+
+export type OneInchSupportedBlockchain = (typeof ONE_INCH_SUPPORTED_BLOCKCHAINS)[number];

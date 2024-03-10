@@ -1,4 +1,4 @@
-import { BLOCKCHAIN_NAMES } from '../../../../core/constants/blockchain-names';
+import { BLOCKCHAIN_NAMES } from '../../../../constants/blockchain-names';
 import { PancakeSwapV2SupportedChain } from './pancakeswap-v2-supported-chains';
 
 export const PANCAKESWAP_V2_CONTRACT_ADDRESS: Record<PancakeSwapV2SupportedChain, string> = {

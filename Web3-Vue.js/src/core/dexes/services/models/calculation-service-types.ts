@@ -1,6 +1,6 @@
-import { AbstractOnChainTrade } from "../../abstract/abstract-dex-trade";
+import { AbstractOnChainTrade } from '../../abstract/abstract-on-chain-trade';
 
-export interface ResolvedTrade{
+export interface ResolvedTrade {
     isActive: boolean;
     trade: AbstractOnChainTrade;
 }

@@ -29,16 +29,13 @@ const hasAvailableTrades = computed(() => trades.value.length > 0);
 const calculateTrades = async (): Promise<void> => {
     try {
         isCalculation.value = true;
-        const trades = await calculationSrv.getCalculatedTrades(
-            fromToken.value as TokenInfo,
-            toToken.value as TokenInfoWithoutAmount
-        );
+        const trades = await calculationSrv.getCalculatedTrades(fromToken.value as TokenInfo, toToken.value as TokenInfoWithoutAmount);
 
         Injector.storeCommit('setTrades', []);
         await nextTick();
         Injector.storeCommit('setTrades', trades);
         isCalculation.value = false;
-    }catch(e){
+    } catch (e) {
         isCalculation.value = false;
     }
 };

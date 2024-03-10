@@ -9,6 +9,6 @@ export const BLOCKCHAIN_NAMES = {
     LINEA: 'LINEA',
     AVALANCHE: 'AVALANCHE',
     SEPOLIA: 'SEPOLIA'
-} as const;
+};
 
 export type BlockchainName = (typeof BLOCKCHAIN_NAMES)[keyof typeof BLOCKCHAIN_NAMES];

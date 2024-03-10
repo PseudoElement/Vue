@@ -31,7 +31,7 @@ const isSelectedTrade = computed(() => selectedTrade.value?.type === wrappedTrad
 
 //funcs
 const selectTrade = (): void => {
-    if(!wrappedTrade.isActive) return;
+    if (!wrappedTrade.isActive) return;
     Injector.storeCommit('selectTrade', wrappedTrade.trade);
 };
 
@@ -42,7 +42,7 @@ onUpdated(() => {
 </script>
 
 <template>
-    <div class="trade" :style="{ backgroundColor: config.bgColor}" :class="{ selected: isSelectedTrade, inactive: !isActive }" @click="selectTrade">
+    <div class="trade" :style="{ backgroundColor: config.bgColor }" :class="{ selected: isSelectedTrade }" @click="selectTrade">
         <div class="trade-icon">
             <img :src="config.icon" alt="Trade icon" width="60" height="60" />
         </div>
@@ -51,6 +51,8 @@ onUpdated(() => {
             <p class="trade-info__content">Amount: {{ `${toAmount} ${toSymbol}` }}</p>
             <p class="trade-info__content">Rank: {{ config.rank }}</p>
         </div>
+
+        <div v-if="!isActive" class="inactive"><h2>Disabled</h2></div>
     </div>
 </template>
 
@@ -100,8 +102,21 @@ onUpdated(() => {
     }
 }
 
-.inactive{
-    opacity: 0.5;
+.inactive {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 25px;
+    color: red;
 }
 
 .selected {

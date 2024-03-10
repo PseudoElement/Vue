@@ -1,4 +1,4 @@
-import { BLOCKCHAIN_NAMES } from '../../../../core/constants/blockchain-names';
+import { BLOCKCHAIN_NAMES } from '../../../../constants/blockchain-names';
 import { UniswapV2SupportedChain } from './uniswap-v2-supported-blockchains';
 
 export const UNISWAP_V2_CONTRACT_ADDRESS: Record<UniswapV2SupportedChain, string> = {

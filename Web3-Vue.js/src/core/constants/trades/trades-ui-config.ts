@@ -1,6 +1,7 @@
 import { ON_CHAIN_PROVIDER, OnChainProviderType } from '../../dexes/models/on-chain-provider-type';
 import UniswapV2SVG from '../../../assets/providers/uniswap-2.svg';
 import PancakeSwapV2SVG from '../../../assets/providers/pancakeswap.svg';
+import OneInchSVG from '../../../assets/providers/1inch.svg';
 
 interface TradeUIConfig {
     label: string;
@@ -21,5 +22,11 @@ export const TRADES_UI_CONFIG: Record<OnChainProviderType, TradeUIConfig> = {
         label: 'UniswapV2',
         rank: 5,
         bgColor: '#fcd4ee'
+    },
+    [ON_CHAIN_PROVIDER['1INCH']]: {
+        icon: OneInchSVG,
+        label: '1inch',
+        rank: 5,
+        bgColor: '#78a6f5'
     }
 } as const;

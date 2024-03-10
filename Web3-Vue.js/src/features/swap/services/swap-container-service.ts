@@ -1,7 +1,7 @@
 import { Injector } from '../../../core/services/injector/injector';
 import { TxHash } from '../../../core/dexes/models/trade-common-types';
 import { AssetType, AssetTypeWithoutAmount } from '../components/swap-form/models/swap-form-types';
-import { AbstractOnChainTrade } from '../../../core/dexes/abstract/abstract-dex-trade';
+import { AbstractOnChainTrade } from '../../../core/dexes/abstract/abstract-on-chain-trade';
 
 export class SwapContainerService {
     public needCalculateTrades(from: AssetType, to: AssetTypeWithoutAmount): boolean {
