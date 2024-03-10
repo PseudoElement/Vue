@@ -1,4 +1,5 @@
 import { AbstractOnChainTrade } from '../../dexes/abstract/abstract-dex-trade';
+import { ResolvedTrade } from '../../dexes/services/models/calculation-service-types';
 import { TradeState } from './trade-model';
 
 export const TradeMutations = {
@@ -8,7 +9,8 @@ export const TradeMutations = {
     clearSelectedTrade(state: TradeState) {
         state.selectedTrade = null;
     },
-    setTrades(state: TradeState, trades: AbstractOnChainTrade[]) {
+    setTrades(state: TradeState, trades: ResolvedTrade[]) {
+        console.log('STORE', trades)
         state.trades = trades;
     }
 };

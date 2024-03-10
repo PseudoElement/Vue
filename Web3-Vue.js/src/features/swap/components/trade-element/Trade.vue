@@ -1,42 +1,48 @@
 <script setup lang="ts">
-import { AbstractOnChainTrade } from '@/src/core/dexes/abstract/abstract-dex-trade';
 import { TRADES_UI_CONFIG } from '../../../../core/constants/trades/trades-ui-config';
-import { computed, onUpdated } from 'vue';
+import { computed, onUpdated, ref } from 'vue';
 import { useStore } from 'vuex';
 import { StoreState } from '../../../../core/store/models/store-types';
 import { Injector } from '../../../../core/services/injector/injector';
+import { ResolvedTrade } from '../../../../core/dexes/services/models/calculation-service-types';
 
-const { trade } = defineProps<{ trade: AbstractOnChainTrade }>();
+const { trade: wrappedTrade } = defineProps<{ trade: ResolvedTrade }>();
 
 const store = useStore<StoreState>();
 
-const config = TRADES_UI_CONFIG[trade.type];
+const config = TRADES_UI_CONFIG[wrappedTrade.trade.type];
+
+//refs
+const isActive = ref<boolean>(wrappedTrade.isActive);
 
 //computeds
 const toAmount = computed(() => {
-    const sliced = trade.outputAmountString.slice(0, 7);
+    const sliced = wrappedTrade.trade.outputAmountString.slice(0, 7);
 
-    if (trade.outputAmountString.length > 6) {
+    if (wrappedTrade.trade.outputAmountString.length > 6) {
         return `${sliced}...`;
     }
 
     return sliced;
 });
-const toSymbol = computed(() => trade.to.symbol);
+const toSymbol = computed(() => wrappedTrade.trade.to.symbol);
 const selectedTrade = computed(() => store.state.trade.selectedTrade);
-const isSelectedTrade = computed(() => selectedTrade.value?.type === trade.type);
+const isSelectedTrade = computed(() => selectedTrade.value?.type === wrappedTrade.trade.type);
 
 //funcs
 const selectTrade = (): void => {
-    Injector.storeCommit('selectTrade', trade);
+    if(!wrappedTrade.isActive) return;
+    Injector.storeCommit('selectTrade', wrappedTrade.trade);
 };
 
 //lifehooks
-onUpdated(() => {});
+onUpdated(() => {
+    isActive.value = wrappedTrade.isActive;
+});
 </script>
 
 <template>
-    <div class="trade" :style="{ backgroundColor: config.bgColor }" :class="{ selected: isSelectedTrade }" @click="selectTrade">
+    <div class="trade" :style="{ backgroundColor: config.bgColor}" :class="{ selected: isSelectedTrade, inactive: !isActive }" @click="selectTrade">
         <div class="trade-icon">
             <img :src="config.icon" alt="Trade icon" width="60" height="60" />
         </div>
@@ -94,6 +100,10 @@ onUpdated(() => {});
     }
 }
 
+.inactive{
+    opacity: 0.5;
+}
+
 .selected {
     box-shadow: 0 2px 1px 2px #ff6eee;
 
@@ -102,4 +112,3 @@ onUpdated(() => {});
     }
 }
 </style>
-, onUpdated, onUpdated
