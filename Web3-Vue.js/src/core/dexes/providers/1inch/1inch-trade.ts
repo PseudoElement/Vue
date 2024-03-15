@@ -40,9 +40,14 @@ export class OneInchTrade extends OnChainTradeViaSendTx {
 
     protected async getOutputAmount(): Promise<BigNumber> {
         const fromAmountWei = AmountParser.toWei(this.from.amount, this.from.decimals);
-        const params = { amount: fromAmountWei, src: this.from.address, dst: this.to.address } as Required<OneInchQuoteReqParams>;
+        const params = {
+            amount: fromAmountWei,
+            src: this.from.address,
+            dst: this.to.address,
+            chainId: this._fromChainId
+        } as Required<OneInchQuoteReqParams>;
 
-        const quoteRes = await this._api.makeQuoteReq(this._fromChainId, params);
+        const quoteRes = await this._api.makeQuoteReq(params);
 
         return new BigNumber(quoteRes.toAmount);
     }
@@ -58,6 +63,7 @@ export class OneInchTrade extends OnChainTradeViaSendTx {
         } as Required<OneInchSwapReqParams>;
 
         const { tx } = await this._api.makeSwapReq(this._fromChainId, params);
+        this._contractAddress = tx.to;
 
         return {
             to: tx.to,

@@ -36,7 +36,7 @@ export class Utils {
         return `${int}.${shortDecimals}...`;
     }
 
-    public static async wait(ms: number = 2000): Promise<void> {
+    public static async wait(ms: number = 500): Promise<void> {
         return new Promise((res) =>
             setTimeout(() => {
                 res();

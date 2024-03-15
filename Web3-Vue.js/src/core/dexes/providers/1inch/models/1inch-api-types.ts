@@ -2,6 +2,7 @@ export interface OneInchQuoteReqParams {
     src: string;
     dst: string;
     amount: string;
+    chainId: number;
 }
 
 export interface OneInchSwapReqParams extends OneInchQuoteReqParams {
