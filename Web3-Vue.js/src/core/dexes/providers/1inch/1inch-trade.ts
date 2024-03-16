@@ -59,10 +59,12 @@ export class OneInchTrade extends OnChainTradeViaSendTx {
             src: this.from.address,
             dst: this.to.address,
             from: Injector.walletAddress,
-            receiver: Injector.walletAddress
+            receiver: Injector.walletAddress,
+            chainId: BLOCKCHAIN_IDS[this.from.blockchain],
+            slippage: 3
         } as Required<OneInchSwapReqParams>;
 
-        const { tx } = await this._api.makeSwapReq(this._fromChainId, params);
+        const { tx } = await this._api.makeSwapReq(params);
         this._contractAddress = tx.to;
 
         return {

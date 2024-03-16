@@ -33,6 +33,10 @@ export class PancakeSwapV2Trade extends OnChainTradeViaContractSend {
         this.to = to;
     }
 
+    protected async getContractAddress(): Promise<string> {
+        return this.contractAddress;
+    }
+
     protected async getOutputAmount(): Promise<BigNumber> {
         const fromAmountWei = AmountParser.toWei(this.from.amount, this.from.decimals);
         const path = [this.from.address, this.to.address];

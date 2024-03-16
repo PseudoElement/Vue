@@ -9,6 +9,13 @@ export abstract class OnChainTradeViaContractSend extends AbstractOnChainTrade {
 
     protected async makeSwap(): Promise<TxHash> {
         const params = this.getContractParams();
+
+        const approved = await Web3Service.isTxApproved(this.from.amount, this.from.address, this.contractAddress);
+
+        if (!approved) {
+            throw new Error('TRANSACTION NOT APPROVED!');
+        }
+
         const txHash = await Web3TxService.sendContractMethod(params);
 
         return txHash;

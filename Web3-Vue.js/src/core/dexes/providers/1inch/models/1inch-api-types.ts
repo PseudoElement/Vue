@@ -8,6 +8,7 @@ export interface OneInchQuoteReqParams {
 export interface OneInchSwapReqParams extends OneInchQuoteReqParams {
     /* source wallet address */
     from: string;
+    slippage: number;
     /* destination wallet address */
     receiver?: string;
 }

@@ -1,12 +1,12 @@
 import BigNumber from 'bignumber.js';
 import { BlockchainName } from '../../constants/blockchain-names';
 import { Injector } from '../../services/injector/injector';
-import { Web3Service } from '../../services/web3-service/web3-service';
 import { OnChainProviderType } from '../models/on-chain-provider-type';
 import { TokenInfo, TokenInfoWithoutAmount } from '../models/token-types';
 import { TxHash } from '../models/trade-common-types';
 import { Utils } from '../../utils/utils';
 import { AmountParser } from '../../services/amount-parser/amount-parser';
+import { TxParams } from '../../services/web3-service/models/web3-service-types';
 
 export abstract class AbstractOnChainTrade {
     public outputAmount: BigNumber | null = null;
@@ -22,9 +22,11 @@ export abstract class AbstractOnChainTrade {
 
     public abstract readonly to: TokenInfoWithoutAmount;
 
-    protected abstract readonly contractAddress: string;
+    protected abstract contractAddress: string;
 
     protected abstract readonly supportedBlockchains: BlockchainName[];
+
+    protected txParams: TxParams = {} as TxParams;
 
     protected get walletAddress(): string {
         return Injector.storeState.wallet.address as string;
@@ -48,12 +50,6 @@ export abstract class AbstractOnChainTrade {
 
     public async swap(): Promise<TxHash> {
         try {
-            const approved = await Web3Service.isTxApproved(this.from.amount, this.from.address, this.contractAddress);
-
-            if (!approved) {
-                throw new Error('TRANSACTION NOT APPROVED!');
-            }
-
             const txHash = await this.makeSwap();
 
             return txHash;
