@@ -6,8 +6,8 @@ export class HttpService {
             .map(([key, value]) => `${key}=${value}`)
             .join('&');
         const url = `${path}?${queryParams}`;
-        const res = await axios.get<string>(url, { ...(headers && { headers }) });
+        const res = await axios.get<T>(url, { ...(headers && { headers }) });
 
-        return JSON.parse(res.data);
+        return res.data;
     }
 }

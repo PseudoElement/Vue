@@ -13,8 +13,20 @@ export interface OneInchSwapReqParams extends OneInchQuoteReqParams {
     receiver?: string;
 }
 
+export interface OneInchAllowanceReqParams {
+    src: string;
+    walletAddress: string;
+    chainId: number;
+}
+
+export interface OneInchApproveReqParams {
+    src: string;
+    amount: string;
+    chainId: number;
+}
+
 export interface OneInchQuoteResponse {
-    toAmount: string;
+    dstAmount: string;
     gas: number;
     fromToken: any;
     toToken: any;
@@ -27,6 +39,17 @@ export interface OneInchSwapResponse {
     fromToken: any;
     toToken: any;
     protocols: any;
+}
+
+export interface OneInchAllowanceResponse {
+    allowance: string;
+}
+
+export interface OneInchApproveResponse {
+    data: string;
+    to: string;
+    value: string;
+    gasPrice: string;
 }
 
 interface OneInchTx {
