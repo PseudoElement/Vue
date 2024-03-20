@@ -7,7 +7,6 @@ import { AmountParser } from '../../../services/amount-parser/amount-parser';
 import { OnChainTradeViaSendTx } from '../../abstract/on-chain-trade-via-send-tx';
 import { ONE_INCH_SUPPORTED_BLOCKCHAINS } from './models/1inch-supported-chains';
 import { OneInchApiService } from './services/1inch-api-service';
-import { BLOCKCHAIN_IDS } from '../../../../core/constants/blockchain-ids';
 import { OneInchQuoteReqParams, OneInchSwapReqParams } from './models/1inch-api-types';
 import { Injector } from '../../../../core/services/injector/injector';
 import { Web3TxService } from '../../../../core/services/web3-transaction/web3-transaction-service';
@@ -28,14 +27,6 @@ export class OneInchTrade extends OnChainTradeViaSendTx {
 
     protected get contractAddress(): string {
         return this._contractAddress;
-    }
-
-    private get _fromChainId(): number {
-        return BLOCKCHAIN_IDS[this.from.blockchain];
-    }
-
-    private get _fromAmountWei(): string {
-        return AmountParser.toWei(this.from.amount, this.from.decimals);
     }
 
     constructor(from: TokenInfo, to: TokenInfoWithoutAmount) {
@@ -70,13 +61,13 @@ export class OneInchTrade extends OnChainTradeViaSendTx {
 
         const needApprove = await this.needOneInchApprove();
 
-        await Utils.wait(1100);
+        await Utils.wait(1000);
 
         if (needApprove) {
             await this.makeOneInchApprove();
         }
 
-        await Utils.wait(1100);
+        await Utils.wait(1000);
 
         const { tx } = await this._api.makeSwapReq(params);
         this._contractAddress = tx.to;
@@ -106,7 +97,6 @@ export class OneInchTrade extends OnChainTradeViaSendTx {
             chainId: this._fromChainId
         });
 
-        const hash = await Web3TxService.sendTransaction(approveConfig);
-        console.log('APPROVE_HASH - ', hash);
+        await Web3TxService.sendTransaction(approveConfig);
     }
 }

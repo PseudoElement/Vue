@@ -1,5 +1,6 @@
 import { BLOCKCHAIN_IDS } from '../constants/blockchain-ids';
 import { BlockchainName } from '../constants/blockchain-names';
+import { Injector } from '../services/injector/injector';
 
 export class Utils {
     public static setDebounce(
@@ -42,5 +43,11 @@ export class Utils {
                 res();
             }, ms)
         );
+    }
+
+    public static parseError(error: Error): void {
+        const [message] = error.message.split('Error: ');
+        console.error('[PARSED ERROR] - ', message);
+        Injector.storeCommit('setSwapError', message);
     }
 }

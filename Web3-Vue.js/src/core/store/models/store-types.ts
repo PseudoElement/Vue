@@ -1,3 +1,5 @@
+import { ErrorsState } from '../errors/errors-model';
+import { ErrorsMutationsType } from '../errors/errors-mutations';
 import { SwapFormActionsType } from '../swap-form/actions';
 import { SwapFormState } from '../swap-form/model';
 import { SwapFormMutationsType } from '../swap-form/mutations';
@@ -14,7 +16,13 @@ export interface StoreState {
     appWeb3: AppWeb3State;
     swapForm: SwapFormState;
     trade: TradeState;
+    errors: ErrorsState;
 }
 
 export type StoreActionsType = SwapFormActionsType | WalletActionsType;
-export type StoreMutationsType = SwapFormMutationsType | WalletMutationsType | AppWeb3MutationsType | TradeMutationsType;
+export type StoreMutationsType =
+    | SwapFormMutationsType
+    | WalletMutationsType
+    | AppWeb3MutationsType
+    | TradeMutationsType
+    | ErrorsMutationsType;

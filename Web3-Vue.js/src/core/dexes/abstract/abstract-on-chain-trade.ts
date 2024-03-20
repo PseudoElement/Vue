@@ -7,6 +7,7 @@ import { TxHash } from '../models/trade-common-types';
 import { Utils } from '../../utils/utils';
 import { AmountParser } from '../../services/amount-parser/amount-parser';
 import { TxParams } from '../../services/web3-service/models/web3-service-types';
+import { BLOCKCHAIN_IDS } from '../../constants/blockchain-ids';
 
 export abstract class AbstractOnChainTrade {
     public outputAmount: BigNumber | null = null;
@@ -14,6 +15,14 @@ export abstract class AbstractOnChainTrade {
     public get outputAmountString(): string {
         const nonWeiAmount = AmountParser.fromWei(this.outputAmount, this.to.decimals);
         return nonWeiAmount.toFixed();
+    }
+
+    protected get _fromChainId(): number {
+        return BLOCKCHAIN_IDS[this.from.blockchain];
+    }
+
+    protected get _fromAmountWei(): string {
+        return AmountParser.toWei(this.from.amount, this.from.decimals);
     }
 
     public abstract readonly type: OnChainProviderType;

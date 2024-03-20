@@ -36,9 +36,6 @@ export interface OneInchQuoteResponse {
 export interface OneInchSwapResponse {
     tx: OneInchTx;
     toAmount: string;
-    fromToken: any;
-    toToken: any;
-    protocols: any;
 }
 
 export interface OneInchAllowanceResponse {
@@ -57,6 +54,5 @@ interface OneInchTx {
     data: string;
     value: string;
     from: string;
-    gasPrice: string;
     gas: number;
 }

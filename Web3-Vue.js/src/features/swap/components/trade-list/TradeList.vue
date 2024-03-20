@@ -29,6 +29,8 @@ const hasAvailableTrades = computed(() => trades.value.length > 0);
 const calculateTrades = async (): Promise<void> => {
     try {
         isCalculation.value = true;
+        Injector.storeCommit('clearSwapError');
+
         const trades = await calculationSrv.getCalculatedTrades(fromToken.value as TokenInfo, toToken.value as TokenInfoWithoutAmount);
 
         Injector.storeCommit('setTrades', []);
@@ -83,6 +85,8 @@ watch(
     &__trades {
         position: relative;
         display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
         gap: 15px;
     }
 }

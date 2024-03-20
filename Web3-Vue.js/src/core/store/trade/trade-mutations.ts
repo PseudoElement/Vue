@@ -10,7 +10,6 @@ export const TradeMutations = {
         state.selectedTrade = null;
     },
     setTrades(state: TradeState, trades: ResolvedTrade[]) {
-        console.log('STORE', trades);
         state.trades = trades;
     }
 };
