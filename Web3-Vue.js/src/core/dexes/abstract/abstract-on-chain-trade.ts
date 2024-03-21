@@ -74,8 +74,7 @@ export abstract class AbstractOnChainTrade {
     }
 
     protected getTxDeadline(maxTimeSecs: number = 300): number {
-        const currentTimestamp = Math.floor(Date.now() / 1000);
-        const deadline = currentTimestamp + maxTimeSecs;
+        const deadline = Date.now() + maxTimeSecs;
         return deadline;
     }
 
